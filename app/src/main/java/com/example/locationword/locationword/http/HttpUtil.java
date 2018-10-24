@@ -4,6 +4,10 @@ import android.os.AsyncTask;
 import android.os.Message;
 import android.util.Log;
 
+import com.example.locationword.locationword.event.MessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -75,6 +79,7 @@ public class HttpUtil {
                     byte[] b = response.body().bytes();
                     String s = new String(b);
                     Log.i("okhttp", "返回结果" + s);
+                    EventBus.getDefault().post(new MessageEvent(s));
                 }
             }
         });
