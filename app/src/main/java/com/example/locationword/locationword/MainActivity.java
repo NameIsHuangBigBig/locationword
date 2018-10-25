@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
-            
+        
     };
 
 }
