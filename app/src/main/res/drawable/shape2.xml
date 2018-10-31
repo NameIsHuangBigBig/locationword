@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?> <shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#65cafe" />
+    <corners android:bottomLeftRadius="12px"
+        android:text="登入"
+        android:bottomRightRadius="12px" android:topLeftRadius="12px"
+        android:topRightRadius="12px" />
+</shape>
