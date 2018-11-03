@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:background="@color/colorTopic">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="群 组"
+            android:textSize="25dp"
+            android:textColor="#FFFFFF"
+            android:gravity="center" />
+        <TextView
+            android:id="@+id/tv_add"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="+"
+            android:textSize="40dp"
+            android:textColor="#FFFFFF"
+            android:gravity="right"
+            android:layout_marginRight="15dp"/>
+    </LinearLayout>
+    <ListView
+        android:id="@+id/list_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/down_layout"
+        android:layout_below="@+id/top_layout"></ListView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#eae8e8"
+        android:layout_above="@+id/down_layout"/>
+
+    <LinearLayout
+        android:id="@+id/down_layout"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true">
+        <ImageView
+            android:id="@+id/img_information"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/ic_launcher"
+            android:layout_margin="10dp"/>
+        <ImageView
+            android:id="@+id/img_group"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/ic_launcher"
+            android:layout_margin="10dp"/>
+        <ImageView
+            android:id="@+id/img_mine"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/ic_launcher"
+            android:layout_margin="10dp"/> .,
+    </LinearLayout>
+
+</RelativeLayout>

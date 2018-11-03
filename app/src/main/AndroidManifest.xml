@@ -87,6 +87,10 @@
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+        <activity android:name=".ModifyNameActivity" />
+        <activity android:name=".ModifyRealnameActivity" />
+        <activity android:name=".ModifyAgeActivity"></activity>
+
     </application>
 
 </manifest>
