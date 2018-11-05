@@ -67,7 +67,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     public void run() {
                                         EMGroupManager.getInstance().loadAllGroups();
                                         EMChatManager.getInstance().loadAllConversations();
-                                        Log.d("main", "登录聊天服务器成功！");
+                                        Log.d(TAG, "登录聊天服务器成功！");
+                                        SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
                                     }
                                 });
                             }
@@ -83,7 +84,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                         });
 
-                        SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
+
                     }
                     break;
                 case 1001:
