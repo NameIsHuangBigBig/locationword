@@ -54,22 +54,22 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/chatting_black"
             android:layout_margin="10dp"/>
         <ImageView
             android:id="@+id/img_group"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/group_blue"
             android:layout_margin="10dp"/>
         <ImageView
             android:id="@+id/img_mine"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@mipmap/ic_launcher"
-            android:layout_margin="10dp"/> .,
+            android:src="@drawable/mine_black"
+            android:layout_margin="10dp"/>
     </LinearLayout>
 
 </RelativeLayout>
