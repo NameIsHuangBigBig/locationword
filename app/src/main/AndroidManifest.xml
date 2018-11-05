@@ -18,9 +18,13 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
+    //读取设备硬件信息，统计数据
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
+    //允许sd卡写权限，需写入地图数据，禁用后无法显示地图
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    //获取统计数据
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
@@ -35,6 +39,9 @@
         <meta-data android:name="EASEMOB_APPKEY"  android:value="1134180704253085#locationword" />
         <meta-data android:value="YOUR_APP_KEY" android:name="5bd67c0ab465f530ac00004b"/>
         <meta-data android:value="Channel ID" android:name="UMENG_CHANNEL"/>
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="C8lihD3VeuBWGOdTHFDq6ZKQGexReUnB" />
         <!-- 声明sdk所需的service SDK核心功能-->
         <service android:name="com.easemob.chat.EMChatService"
             android:exported="true"/>
@@ -55,7 +62,7 @@
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -87,9 +94,9 @@
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <activity android:name=".ModifyNameActivity" />
-        <activity android:name=".ModifyRealnameActivity" />
-        <activity android:name=".ModifyAgeActivity"></activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".ResetPasswordActivity"></activity>
 
     </application>
 

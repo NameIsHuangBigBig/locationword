@@ -27,11 +27,20 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 />
-
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:background="#cccccc"/>
             <EditText
+                android:paddingLeft="20dp"
                 android:id="@+id/et_telphonenumber"
                 android:background="#ffffff"
-                android:gravity="center"
+                android:textSize="14dp"
+                android:gravity="center_vertical"
                 android:hint="手机号"
                 android:layout_width="220dp"
                 android:layout_height="50dp" />
@@ -52,10 +61,20 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 />
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:background="#cccccc"/>
             <EditText
+                android:paddingLeft="20dp"
                 android:id="@+id/et_passward"
                 android:background="#ffffff"
-                android:gravity="center"
+                android:textSize="14dp"
+                android:gravity="center_vertical"
                 android:hint="密码"
                 android:layout_width="220dp"
                 android:layout_height="50dp" />

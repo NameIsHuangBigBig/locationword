@@ -1,6 +1,7 @@
 package com.example.locationword.locationword.http;
 
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
@@ -20,6 +21,7 @@ import okhttp3.Response;
 
 public class HttpUtil {
     private static HttpUtil httpUtil=null;
+
    // 双重加锁机制单例模式
     public static HttpUtil getInstence() {
         if (httpUtil == null){
@@ -31,7 +33,8 @@ public class HttpUtil {
         }
         return httpUtil;
     }
-    public void doGet(String url){
+    public void doGet(String url,final Handler hcb){
+
         OkHttpClient okHttpClient=new OkHttpClient();
         Request request=new Request.Builder()
                 .url(url)
@@ -41,21 +44,21 @@ public class HttpUtil {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                Log.i("okhttp","访问异常");
+                hcb.sendEmptyMessage(1001);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.code()==200){
-                    byte[]b=response.body().bytes();
-                    String s=new String(b);
-                    Log.i("okhttp","返回结果"+s);
-                }
+                String s=new String(response.body().bytes());
+                Message m= new Message();
+                m.what=1000;
+                m.obj=s;
+                hcb.handleMessage(m);
             }
         });
     }
-    public void doPost(String url, Map<String,String> map){
+    public void doPost(String url, Map<String,String> map,final Handler hand){
+
         FormBody.Builder params=new FormBody.Builder();
         for(String key: map.keySet()){
             params.add(key,map.get(key));
@@ -69,18 +72,20 @@ public class HttpUtil {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                Log.i("okhttp","访问异常");
+                hand.sendEmptyMessage(1001);
+                Log.i("LoginActivity","DDDD");
+
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if(response.code()==200) {
-                    byte[] b = response.body().bytes();
-                    String s = new String(b);
-                    Log.i("okhttp", "返回结果" + s);
-                    EventBus.getDefault().post(new MessageEvent(s));
-                }
+                String s=new String(response.body().bytes());
+                Message m= new Message();
+                Log.i("LoginActivity","1000");
+
+                m.what=1000;
+                m.obj=s;
+                hand.handleMessage(m);
             }
         });
     }

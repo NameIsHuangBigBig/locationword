@@ -8,8 +8,9 @@ public class API {
     /**
      * 基本路径
      */
-    public static final String BASEURL = "http://172.17.146.136:8080/";
-
+    public static final String BASEURL = "http://192.168.253.7:8082/locationword/";
+    //检查登录
+    public static final String checkLogin = BASEURL+"/Login/checklogin";
 
 
 }
