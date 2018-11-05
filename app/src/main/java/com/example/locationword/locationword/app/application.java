@@ -9,6 +9,7 @@ import android.util.Log;
 import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
 import com.easemob.chat.EMChat;
+import com.easemob.easeui.controller.EaseUI;
 import com.mob.MobSDK;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.PlatformConfig;
@@ -54,8 +55,8 @@ public class application extends Application {
             // 则此application::onCreate 是被service 调用的，直接返回
             return;
         }
+        EaseUI.getInstance().init(appContext);
         EMChat.getInstance().init(appContext);
-
 /**
  * debugMode == true 时为打开，SDK会在log里输入调试信息
  * @param debugMode

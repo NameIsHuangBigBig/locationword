@@ -12,6 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.map.MapView;
+import com.easemob.EMCallBack;
+import com.easemob.EMError;
+import com.easemob.chat.EMChatManager;
+import com.easemob.chat.EMGroupManager;
+import com.easemob.exceptions.EaseMobException;
 import com.example.locationword.locationword.event.MessageEvent;
 import com.example.locationword.locationword.http.API;
 import com.example.locationword.locationword.http.HttpUtil;
@@ -45,6 +50,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String s = (String)m.obj;
                     JsonObject jo = JSONChange.StringToJsonObject(s);
                     final String result=jo.get("message").getAsString();
+                    final String userId=jo.get("userId").getAsString();
                     Log.i(TAG,result);
                     runOnUiThread(new Runnable() {
                         @Override
@@ -54,11 +60,40 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
 
                     if(result.equals("登录成功")){
+                        EMChatManager.getInstance().login(userId,"123456",new EMCallBack() {//回调
+                            @Override
+                            public void onSuccess() {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        EMGroupManager.getInstance().loadAllGroups();
+                                        EMChatManager.getInstance().loadAllConversations();
+                                        Log.d("main", "登录聊天服务器成功！");
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onProgress(int progress, String status) {
+
+                            }
+
+                            @Override
+                            public void onError(int code, String message) {
+                                Log.d("main", "登录聊天服务器失败！");
+                            }
+                        });
+
                         SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
                     }
                     break;
                 case 1001:
-                  //  ShowUtil.showText(LoginActivity.this,"网络异常");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ShowUtil.showText(LoginActivity.this,"网络异常");
+                        }
+                    });
+
                     break;
             }
         }

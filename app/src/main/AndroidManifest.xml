@@ -97,7 +97,8 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".ResetPasswordActivity"></activity>
-
+        <activity android:name=".ChatRoomActivity"></activity>
+        <activity android:name=".AddGroupActivity"></activity>
     </application>
 
 </manifest>
