@@ -146,7 +146,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                              }
                          });
                      }else{
-                         //registerUser();
+                         registerUser();
                          runOnUiThread(new Runnable() {
                              @Override
                              public void run() {

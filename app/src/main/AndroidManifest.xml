@@ -78,9 +78,10 @@
 
         <activity android:name=".MainActivity" android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".ChatRoomActivity"></activity>
+        <activity android:name=".ChatActivity"></activity>
         <activity android:name=".AddGroupActivity"></activity>
         <activity android:name=".ForgetPasswordActivity"></activity>
+        <activity android:name="com.hyphenate.easeui.ui.EaseBaiduMapActivity"></activity>
     </application>
 
 </manifest>
