@@ -73,8 +73,6 @@ public class HttpUtil {
             @Override
             public void onFailure(Call call, IOException e) {
                 hand.sendEmptyMessage(1001);
-                Log.i("LoginActivity","DDDD");
-
             }
 
             @Override

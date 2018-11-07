@@ -2,8 +2,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
+    <LinearLayout
+        android:id="@+id/tv_system_message"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical">
+        <ImageView
+            android:background="@drawable/system_message"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"/>
+    <TextView
+        android:paddingLeft="20dp"
+        android:gravity="center_vertical"
+        android:text="系统消息"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        />
+    </LinearLayout>
     <ListView
+        android:layout_below="@+id/tv_system_message"
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,7 +33,7 @@
         android:dividerHeight="1px"
         android:fastScrollEnabled="false" />
 
-    <com.easemob.easeui.widget.EaseSidebar
+    <com.hyphenate.easeui.widget.EaseSidebar
         android:id="@+id/sidebar"
         android:layout_width="30dp"
         android:layout_height="match_parent"

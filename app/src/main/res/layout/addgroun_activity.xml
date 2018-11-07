@@ -2,12 +2,40 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/mycolor">
+        <ImageView
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/b_return"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:src="@mipmap/returnlogo"/>
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="创建群聊"
+            android:textColor="#fff"
+            android:textSize="18dp"
+            />
 
-
+    </RelativeLayout>
+    <LinearLayout
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
     <TextView
+        android:layout_marginTop="30dp"
         android:textColor="#000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,14 +63,14 @@
         android:text="群描述"/>
     <EditText
         android:id="@+id/et_num"
-        android:hint="请输入10-2000的数字"
+        android:hint="请输入10-999的数字"
         android:textSize="14dp"
         android:inputType="number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="6"/>
+        android:maxLines="3"/>
     <Button
-        android:id="@+id/bt_login"
+        android:id="@+id/btn_finish"
         android:layout_width="260dp"
         android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
@@ -51,4 +79,5 @@
         android:gravity="center"
         android:text="完   成"
         android:textColor="#ffff" />
+    </LinearLayout>
 </LinearLayout>

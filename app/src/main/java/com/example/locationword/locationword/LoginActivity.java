@@ -1,5 +1,6 @@
 package com.example.locationword.locationword;
 
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -11,21 +12,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baidu.mapapi.map.MapView;
-import com.easemob.EMCallBack;
-import com.easemob.EMError;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMGroupManager;
-import com.easemob.exceptions.EaseMobException;
+
+
 import com.example.locationword.locationword.event.MessageEvent;
 import com.example.locationword.locationword.http.API;
 import com.example.locationword.locationword.http.HttpUtil;
 import com.example.locationword.locationword.myview.LoadingDialog;
 
 import com.example.locationword.locationword.tool.JSONChange;
+import com.example.locationword.locationword.tool.PreferenceUtil;
 import com.example.locationword.locationword.tool.ShowUtil;
 import com.example.locationword.locationword.tool.SkipUtils;
 import com.google.gson.JsonObject;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMChatManager;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMGroupManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -35,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
-    private MapView mMapView = null;
+
     private EditText etTelphonenumber;
     private EditText etPassward;
     private Button btLogin;
@@ -50,47 +52,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String s = (String)m.obj;
                     JsonObject jo = JSONChange.StringToJsonObject(s);
                     final String result=jo.get("message").getAsString();
-                    final String userId=jo.get("userId").getAsString();
+
                     Log.i(TAG,result);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            loadingDialog.close();
                              ShowUtil.showText(LoginActivity.this,result);
                         }
                     });
 
                     if(result.equals("登录成功")){
-                        EMChatManager.getInstance().login(userId,"123456",new EMCallBack() {//回调
-                            @Override
-                            public void onSuccess() {
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        EMGroupManager.getInstance().loadAllGroups();
-                                        EMChatManager.getInstance().loadAllConversations();
-                                        Log.d(TAG, "登录聊天服务器成功！");
-                                        SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onProgress(int progress, String status) {
-
-                            }
-
-                            @Override
-                            public void onError(int code, String message) {
-                                Log.d("main", "登录聊天服务器失败！");
-                            }
-                        });
-
-
+                        final String userId=jo.get("userid").getAsString();
+                        final String userPhone=jo.get("userphone").getAsString();
+                        SharedPreferences preferences = getSharedPreferences("Login",MODE_PRIVATE);
+                        preferences.edit().putString("userid",userId).putString("userphone",userPhone).commit();
+                        LoginEMClient(userId);
                     }
                     break;
                 case 1001:
+                    Log.i(TAG,"SDSD");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            loadingDialog.close();
                             ShowUtil.showText(LoginActivity.this,"网络异常");
                         }
                     });
@@ -103,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-        loadingDialog=new LoadingDialog(LoginActivity.this,"请稍候...");
+        //loadingDialog=new LoadingDialog(LoginActivity.this,"请稍候...");
         initView();
         onClicked();
 
@@ -115,6 +100,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         register.setOnClickListener(this);
     }
     public void initView(){
+        loadingDialog=new LoadingDialog(LoginActivity.this,"请稍候...");
         etTelphonenumber = (EditText) findViewById(R.id.et_telphonenumber);
         etPassward = (EditText) findViewById(R.id.et_passward);
         btLogin = (Button) findViewById(R.id.bt_login);
@@ -141,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     ShowUtil.showText(LoginActivity.this,"请输入密码");
 
                 }else{
-
+                    loadingDialog.show();
                     Map<String,String> m = new HashMap<>();
                     m.put("phone",phone);
                     m.put("password",password);
@@ -150,7 +136,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 break;
             case R.id.forgetpassword:
-                SkipUtils.skipActivity(LoginActivity.this,ResetPasswordActivity.class);
+                SkipUtils.skipActivity(LoginActivity.this,ForgetPasswordActivity.class);
                 break;
             case R.id.register:
                 SkipUtils.skipActivity(LoginActivity.this,RegisterActivity.class);
@@ -168,6 +154,46 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+    public void LoginEMClient(String userName){
+        EMClient.getInstance().login(userName,"123456",new EMCallBack() {//回调
+            @Override
+            public void onSuccess() {
+                EMClient.getInstance().groupManager().loadAllGroups();
+                EMClient.getInstance().chatManager().loadAllConversations();
+                Log.d("main", "登录聊天服务器成功！");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
+                        SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
+                        LoginActivity.this.finish();
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+
+            @Override
+            public void onError(int code, String message) {
+//                ShowUtil.showText(LoginActivity.this,"服务器异常");
+                if(message.equals("User is already login")){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
+                            LoginActivity.this.finish();
+                        }
+                    }).start();
+                      }
+                Log.d("main", "登录聊天服务器失败！"+message);
+            }
+        });
+    }
 
 }

@@ -70,6 +70,7 @@
                 android:layout_marginLeft="20dp"
                 android:background="#cccccc"/>
             <EditText
+                android:inputType="textPassword"
                 android:paddingLeft="20dp"
                 android:id="@+id/et_passward"
                 android:background="#ffffff"

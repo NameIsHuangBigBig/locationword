@@ -7,4 +7,6 @@
     <color name="mycolor2">#65cafe</color>
     <color name="colorBackground">#43536d</color>
     <color name="colorTopic">#43536d</color>
+    <color name="tab_checked">#595857</color>
+    <color name="tab_unchecked">#4083ef</color>
 </resources>

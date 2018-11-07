@@ -43,25 +43,7 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="C8lihD3VeuBWGOdTHFDq6ZKQGexReUnB" />
         <!-- 声明sdk所需的service SDK核心功能-->
-        <service android:name="com.easemob.chat.EMChatService"
-            android:exported="true"/>
-        <service
-            android:name="com.easemob.chat.EMJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true"
-            />
-        <!-- 声明sdk所需的receiver -->
-        <receiver android:name="com.easemob.chat.EMMonitorReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
-                <data android:scheme="package"/>
-            </intent-filter>
-            <!-- 可选filter -->
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -94,11 +76,11 @@
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity" android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".ResetPasswordActivity"></activity>
         <activity android:name=".ChatRoomActivity"></activity>
         <activity android:name=".AddGroupActivity"></activity>
+        <activity android:name=".ForgetPasswordActivity"></activity>
     </application>
 
 </manifest>
