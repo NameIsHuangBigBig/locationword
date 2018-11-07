@@ -19,6 +19,7 @@ import com.example.locationword.locationword.http.API;
 import com.example.locationword.locationword.http.HttpUtil;
 import com.example.locationword.locationword.myview.LoadingDialog;
 
+import com.example.locationword.locationword.tool.Constant;
 import com.example.locationword.locationword.tool.JSONChange;
 import com.example.locationword.locationword.tool.PreferenceUtil;
 import com.example.locationword.locationword.tool.ShowUtil;
@@ -65,7 +66,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if(result.equals("登录成功")){
                         final String userId=jo.get("userid").getAsString();
                         final String userPhone=jo.get("userphone").getAsString();
-                        SharedPreferences preferences = getSharedPreferences("Login",MODE_PRIVATE);
+                        SharedPreferences preferences = getSharedPreferences(Constant.logindata,MODE_PRIVATE);
                         preferences.edit().putString("userid",userId).putString("userphone",userPhone).commit();
                         LoginEMClient(userId);
                     }
@@ -164,7 +165,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
+                        EMClient.getInstance().chatManager().loadAllConversations();
+                        EMClient.getInstance().groupManager().loadAllGroups();
                         SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
                         LoginActivity.this.finish();
                     }
@@ -185,7 +187,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-
+                            EMClient.getInstance().chatManager().loadAllConversations();
+                            EMClient.getInstance().groupManager().loadAllGroups();
                             SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
                             LoginActivity.this.finish();
                         }
