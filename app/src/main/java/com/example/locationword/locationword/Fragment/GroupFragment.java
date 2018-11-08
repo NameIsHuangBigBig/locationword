@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.locationword.locationword.ChatActivity;
 import com.example.locationword.locationword.MainActivity;
@@ -33,22 +34,17 @@ import java.util.Map;
 
 public class GroupFragment extends Fragment {
     EaseContactListFragment contactListFragment;
+    ProgressBar loading ;
     Map<String, EaseUser> m = new HashMap<String, EaseUser>();
     private Handler h = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    contactListFragment = new EaseContactListFragment();
-                    contactListFragment.setContactListItemClickListener(new EaseContactListFragment.EaseContactListItemClickListener() {
+                    Log.i("event","set");
 
-                        @Override
-                        public void onListItemClicked(EaseUser user) {
-                            startActivity(new Intent(getContext(), ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID, user.getUsername()));
-                        }
-                    });
-                    getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fl_content, contactListFragment).commit();
-                    contactListFragment.setContactsMap(m);
+                    loading.setVisibility(View.GONE);
+                    contactListFragment.refresh();
                     break;
             }
         }
@@ -56,13 +52,25 @@ public class GroupFragment extends Fragment {
 
     public View onCreateView(LayoutInflater layoutinflater, ViewGroup vg, Bundle bundle) {
         View v = View.inflate(getContext(), R.layout.group_fragment, null);
-        initView();
+        initView(v);
         getGroupList();
         return v;
     }
 
-    public void initView() {
+    public void initView(View v) {
+        loading= v.findViewById(R.id.loading);
 
+        contactListFragment = new EaseContactListFragment();
+        contactListFragment.setContactsMap(m);
+        contactListFragment.setContactListItemClickListener(new EaseContactListFragment.EaseContactListItemClickListener() {
+
+            @Override
+            public void onListItemClicked(EaseUser user) {
+                startActivity(new Intent(getContext(), ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID, user.getUsername()));
+            }
+        });
+        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fl_content, contactListFragment).commit();
+        contactListFragment.setContactsMap(m);
     }
 
     public void getGroupList() {
@@ -75,8 +83,8 @@ public class GroupFragment extends Fragment {
                     for (int i = 0; i < grouplist.size(); i++) {
                         EaseUser eu = new EaseUser(grouplist.get(i).getGroupName());
                         m.put(grouplist.get(i).getGroupId(), eu);
-                        h.sendEmptyMessage(1);
                     }
+                    h.sendEmptyMessage(1);
                 } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
@@ -101,7 +109,23 @@ public class GroupFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
     public void onDataSynEvent(GroupUpdateEvent event) {
         Log.i("event","UPDATEGROUP");
-        contactListFragment.refresh();
+        m.clear();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
+                try {
+                    List<EMGroup> grouplist = EMClient.getInstance().groupManager().getJoinedGroupsFromServer();//需异步处理
+                    for (int i = 0; i < grouplist.size(); i++) {
+                        EaseUser eu = new EaseUser(grouplist.get(i).getGroupName());
+                        m.put(grouplist.get(i).getGroupId(), eu);
+                        h.sendEmptyMessage(1);
+                    }
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
     }
 }
