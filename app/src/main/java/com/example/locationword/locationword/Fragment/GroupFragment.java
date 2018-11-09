@@ -15,6 +15,7 @@ import com.example.locationword.locationword.ChatActivity;
 import com.example.locationword.locationword.MainActivity;
 import com.example.locationword.locationword.R;
 import com.example.locationword.locationword.event.GroupUpdateEvent;
+import com.example.locationword.locationword.tool.Constant;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCursorResult;
 import com.hyphenate.chat.EMGroup;
@@ -61,12 +62,15 @@ public class GroupFragment extends Fragment {
         loading= v.findViewById(R.id.loading);
 
         contactListFragment = new EaseContactListFragment();
+
         contactListFragment.setContactsMap(m);
         contactListFragment.setContactListItemClickListener(new EaseContactListFragment.EaseContactListItemClickListener() {
 
             @Override
             public void onListItemClicked(EaseUser user) {
-                startActivity(new Intent(getContext(), ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID, user.getUsername()));
+
+                startActivity(new Intent(getContext(), ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID, user.getUsername())
+                .putExtra(Constant.EaseGroupId,user.getGroupId()).putExtra(Constant.EaseChattype,"Group"));
             }
         });
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.fl_content, contactListFragment).commit();
@@ -81,7 +85,9 @@ public class GroupFragment extends Fragment {
                 try {
                     List<EMGroup> grouplist = EMClient.getInstance().groupManager().getJoinedGroupsFromServer();//需异步处理
                     for (int i = 0; i < grouplist.size(); i++) {
+                        Log.i("group","groupName"+grouplist.get(i).getGroupName()+"groupid"+grouplist.get(i).getGroupId());
                         EaseUser eu = new EaseUser(grouplist.get(i).getGroupName());
+                        eu.setGroupId(grouplist.get(i).getGroupId());
                         m.put(grouplist.get(i).getGroupId(), eu);
                     }
                     h.sendEmptyMessage(1);
