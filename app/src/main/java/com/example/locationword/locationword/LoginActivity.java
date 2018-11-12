@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            loadingDialog.close();
+
                              ShowUtil.showText(LoginActivity.this,result);
                         }
                     });
@@ -128,6 +128,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     ShowUtil.showText(LoginActivity.this,"请输入密码");
 
                 }else{
+                    Log.i(TAG,"show");
                     loadingDialog.show();
                     Map<String,String> m = new HashMap<>();
                     m.put("phone",phone);
@@ -153,6 +154,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
     public void onDestroy(){
         super.onDestroy();
+
+        loadingDialog.close();
         EventBus.getDefault().unregister(this);
     }
     public void LoginEMClient(String userName){
@@ -167,6 +170,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     public void run() {
                         EMClient.getInstance().chatManager().loadAllConversations();
                         EMClient.getInstance().groupManager().loadAllGroups();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadingDialog.close();
+                            }
+                        });
                         SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
                         LoginActivity.this.finish();
                     }
@@ -189,6 +198,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         public void run() {
                             EMClient.getInstance().chatManager().loadAllConversations();
                             EMClient.getInstance().groupManager().loadAllGroups();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadingDialog.close();
+                                }
+                            });
+
                             SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
                             LoginActivity.this.finish();
                         }
@@ -198,5 +214,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         });
     }
+
 
 }

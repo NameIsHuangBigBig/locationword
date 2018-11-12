@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.example.locationword.locationword.event.GroupUpdateEvent;
+import com.example.locationword.locationword.myview.LoadingDialog;
 import com.example.locationword.locationword.tool.Constant;
 import com.example.locationword.locationword.tool.ShowUtil;
 import com.hyphenate.chat.EMClient;
@@ -24,6 +25,7 @@ public class AddGroupActivity extends AppCompatActivity implements View.OnClickL
     EditText et_num;
     ImageView b_return;
     Button btn_finish;
+    private LoadingDialog loadingDialog;
     public void onCreate(Bundle bundle){
         super.onCreate(bundle);
         setContentView(R.layout.addgroun_activity);
@@ -36,6 +38,7 @@ public class AddGroupActivity extends AppCompatActivity implements View.OnClickL
         btn_finish.setOnClickListener(this);
     }
     public void initView(){
+        loadingDialog = new LoadingDialog(AddGroupActivity.this,"创建中...");
         et_groupname=findViewById(R.id.et_groupname);
         et_distribue=findViewById(R.id.et_distribue);
         et_num=findViewById(R.id.et_num);
@@ -56,6 +59,7 @@ public class AddGroupActivity extends AppCompatActivity implements View.OnClickL
                 if(allMembers<10||allMembers>999){
                     ShowUtil.showText(AddGroupActivity.this,"群人数不正确");
                 }else{
+                    loadingDialog.show();
                     EMCreateGroup(allMembers);
                 }
                 break;
@@ -80,6 +84,7 @@ public class AddGroupActivity extends AppCompatActivity implements View.OnClickL
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                loadingDialog.close();
                                 EventBus.getDefault().post(new GroupUpdateEvent(true));
                                 ShowUtil.showText(AddGroupActivity.this,"创建群成功");
                                 AddGroupActivity.this.finish();
