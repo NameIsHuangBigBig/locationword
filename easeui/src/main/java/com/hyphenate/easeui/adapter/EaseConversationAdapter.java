@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -30,6 +31,7 @@ import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseConversationList.EaseConversationListHelper;
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.util.DateUtils;
+import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,19 +82,21 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.ease_row_chat_history, parent, false);
         }
         ViewHolder holder = (ViewHolder) convertView.getTag();
         if (holder == null) {
             holder = new ViewHolder();
+            holder.swipeMenuLayout=(SwipeMenuLayout) convertView.findViewById(R.id.swipeMenuLayout);
             holder.name = (TextView) convertView.findViewById(R.id.name);
             holder.unreadLabel = (TextView) convertView.findViewById(R.id.unread_msg_number);
             holder.message = (TextView) convertView.findViewById(R.id.message);
             holder.time = (TextView) convertView.findViewById(R.id.time);
             holder.avatar = (ImageView) convertView.findViewById(R.id.avatar);
             holder.msgState = convertView.findViewById(R.id.msg_state);
+            holder.btnDelete = (Button) convertView.findViewById(R.id.btn_delete);
             holder.list_itease_layout = (RelativeLayout) convertView.findViewById(R.id.list_itease_layout);
             holder.motioned = (TextView) convertView.findViewById(R.id.mentioned);
             convertView.setTag(holder);
@@ -100,10 +104,10 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         holder.list_itease_layout.setBackgroundResource(R.drawable.ease_mm_listitem);
 
         // get conversation
-        EMConversation conversation = getItem(position);
+        final EMConversation conversation = getItem(position);
         // get username or group id
         String username = conversation.conversationId();
-        
+        holder.swipeMenuLayout.quickClose();
         if (conversation.getType() == EMConversationType.GroupChat) {
             String groupId = conversation.conversationId();
             if(EaseAtMessageHelper.get().hasAtMeMsg(groupId)){
@@ -125,6 +129,24 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             EaseUserUtils.setUserNick(username, holder.name);
             holder.motioned.setVisibility(View.GONE);
         }
+        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //删除消息记录
+                conversation.clearAllMessages();
+                conversationList.remove(position);
+                notifyDataSetChanged();
+            }
+        });
+
+        holder.list_itease_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onItemListener!=null){
+                    onItemListener.onItemSelected(position);
+                }
+            }
+        });
 
         EaseAvatarOptions avatarOptions = EaseUI.getInstance().getAvatarOptions();
         if(avatarOptions != null && holder.avatar instanceof EaseImageView) {
@@ -300,7 +322,14 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             }
         }
     }
+    private OnItemListener onItemListener;
 
+    public void setOnItemListener(OnItemListener onItemListener) {
+        this.onItemListener = onItemListener;
+    }
+    public interface OnItemListener{
+        public void onItemSelected(int position);
+    }
     private EaseConversationListHelper cvsListHelper;
 
     public void setCvsListHelper(EaseConversationListHelper cvsListHelper){
@@ -323,6 +352,8 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         /** layout */
         RelativeLayout list_itease_layout;
         TextView motioned;
+        Button btnDelete;
+        SwipeMenuLayout swipeMenuLayout;
     }
 }
 

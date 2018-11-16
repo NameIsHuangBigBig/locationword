@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         final String userId=jo.get("userid").getAsString();
                         final String userPhone=jo.get("userphone").getAsString();
                         SharedPreferences preferences = getSharedPreferences(Constant.logindata,MODE_PRIVATE);
-                        preferences.edit().putString("userid",userId).putString("userphone",userPhone).commit();
+                        preferences.edit().putString(Constant.UserId,userId).putString(Constant.UserPhone,userPhone).commit();
                         LoginEMClient(userId);
                     }
                     break;

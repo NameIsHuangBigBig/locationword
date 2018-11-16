@@ -49,5 +49,6 @@ dependencies {
     implementation files('libs/bcprov-jdk16-139.jar')
     implementation project(path: ':easeUI')
     implementation'com.android.support:design:28.0.0'
-
+    implementation 'org.apmem.tools:layouts:1.10@aar'
+    implementation 'com.liaoinstan.springview:library:1.3.2'
 }

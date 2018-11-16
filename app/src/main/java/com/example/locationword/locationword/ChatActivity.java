@@ -6,11 +6,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.locationword.locationword.event.ChatActivityUpdateEvent;
 import com.example.locationword.locationword.tool.Constant;
 import com.example.locationword.locationword.tool.SkipUtils;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.ui.EaseChatFragment;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
 
@@ -54,9 +59,23 @@ public class ChatActivity extends AppCompatActivity {
             }
             chatFragment.setArguments(b);
         }
-
-
-
         getSupportFragmentManager().beginTransaction().add(R.id.fl_content, chatFragment).commit();
+    }
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);//订阅
+        }
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);//订阅
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
+    public void onDataSynEvent(ChatActivityUpdateEvent event) {
+        Log.i("event1",event.getResult() );
+        chatFragment.getTitleBar().setTitle(event.getResult());
     }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -86,11 +87,12 @@ public class EaseConversationListFragment extends EaseBaseFragment{
         conversationListView.init(conversationList);
         
         if(listItemClickListener != null){
-            conversationListView.setOnItemClickListener(new OnItemClickListener() {
+            conversationListView.setOnItemListener(new EaseConversationList.OnItemListener() {
 
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemClick(int position) {
                     EMConversation conversation = conversationListView.getItem(position);
+                    Log.i("ckucj","sdsdsd");
                     listItemClickListener.onListItemClicked(conversation);
                 }
             });

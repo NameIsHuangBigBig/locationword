@@ -19,6 +19,9 @@ public class SkipUtils {
             }
             else if(value instanceof Integer){
                 intent.putExtra(key,(int)value);
+            }else if (value instanceof String[]){
+                intent.putExtra(key,(String[]) value);
+
             }
         }
         context.startActivity(intent);

@@ -6,4 +6,8 @@ public class Constant {
     public static final String  logindata="Login";
     public static final String EaseGroupId="GroupId";
     public static final String EaseChattype="ChatType";
+
+    public static final String UserId="userid";
+
+    public static final String UserPhone="userphone";
 }

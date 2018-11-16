@@ -67,6 +67,14 @@ public class EaseConversationList extends ListView{
             this.conversationListHelper = helper;
         }
         adapter = new EaseConversationAdapter(context, 0, conversationList);
+        adapter.setOnItemListener(new EaseConversationAdapter.OnItemListener() {
+            @Override
+            public void onItemSelected(int position) {
+                if (onItemListener!=null){
+                    onItemListener.onItemClick(position);
+                }
+            }
+        });
         adapter.setCvsListHelper(conversationListHelper);
         adapter.setPrimaryColor(primaryColor);
         adapter.setPrimarySize(primarySize);
@@ -120,5 +128,14 @@ public class EaseConversationList extends ListView{
     }
     public void setConversationListHelper(EaseConversationListHelper helper){
         conversationListHelper = helper;
+    }
+    private OnItemListener onItemListener;
+
+    public void setOnItemListener(OnItemListener onItemListener) {
+        this.onItemListener = onItemListener;
+    }
+
+    public interface OnItemListener{
+        public void onItemClick(int position);
     }
 }

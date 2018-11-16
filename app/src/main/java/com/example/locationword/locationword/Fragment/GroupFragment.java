@@ -42,8 +42,6 @@ public class GroupFragment extends Fragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    Log.i("event","set");
-
                     loading.setVisibility(View.GONE);
                     contactListFragment.refresh();
                     break;
@@ -78,6 +76,7 @@ public class GroupFragment extends Fragment {
     }
 
     public void getGroupList() {
+        m.clear();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -100,9 +99,9 @@ public class GroupFragment extends Fragment {
 
     }
 
-    public void onCreate(Bundle b) {
-        super.onCreate(b);
-        if (EventBus.getDefault() != null) {
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);//订阅
         }
     }
@@ -115,23 +114,6 @@ public class GroupFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
     public void onDataSynEvent(GroupUpdateEvent event) {
         Log.i("event","UPDATEGROUP");
-        m.clear();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-                    List<EMGroup> grouplist = EMClient.getInstance().groupManager().getJoinedGroupsFromServer();//需异步处理
-                    for (int i = 0; i < grouplist.size(); i++) {
-                        EaseUser eu = new EaseUser(grouplist.get(i).getGroupName());
-                        m.put(grouplist.get(i).getGroupId(), eu);
-                        h.sendEmptyMessage(1);
-                    }
-                } catch (HyphenateException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }).start();
+        getGroupList();
     }
 }

@@ -83,6 +83,8 @@
         <activity android:name=".ForgetPasswordActivity"></activity>
         <activity android:name=".GroupManagerActivity"></activity>
         <activity android:name=".MapActivity"></activity>
+        <activity android:name=".ChangeGroupNameActivity"></activity>
+        <activity android:name=".InviteGroupManActivity"></activity>
         <activity android:name="com.hyphenate.easeui.ui.EaseShowBigImageActivity"></activity>
         <activity android:name="com.hyphenate.easeui.ui.EaseBaiduMapActivity"></activity>
     </application>
