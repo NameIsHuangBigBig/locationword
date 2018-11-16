@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentTop="true"
+        android:background="#43536d">
+
+        <ImageView
+            android:id="@+id/img_gruop_return"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/returnlogo"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="创 建 群 聊"
+            android:textColor="#FFFFFF"
+            android:textSize="25dp"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/tv_group_add"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="15dp"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:text="确定"
+            android:textColor="#FFFFFF"
+            android:textSize="18dp" />
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="54dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="群聊图标:"
+            android:gravity="center"/>
+        <ImageView
+            android:id="@+id/img_group_head"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="10dp"
+            android:background="#000000"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/b_tv"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@+id/name_layout"
+        android:background="#eae8e8" />
+
+    <LinearLayout
+        android:id="@+id/realname_layout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/b_tv"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="群聊名称："
+            android:gravity="center"/>
+        <EditText
+            android:id="@+id/ed_group_name"
+            android:layout_width="200dp"
+            android:layout_height="45dp"
+            android:background="@drawable/editview_shape"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/b_tv2"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@+id/realname_layout"
+        android:background="#eae8e8"/>
+
+
+
+    <TextView
+        android:id="@+id/b_tv3"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@+id/age_layout"
+        android:background="#eae8e8"/>
+
+    <LinearLayout
+        android:id="@+id/sex_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/b_tv2"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="群里简介："
+            android:gravity="center"/>
+        <EditText
+            android:id="@+id/ed_group_synopsis"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="20dp"
+            android:maxLines="5"
+            android:background="@drawable/editview_shape"/>
+
+    </LinearLayout>
+
+
+
+
+
+</RelativeLayout>
