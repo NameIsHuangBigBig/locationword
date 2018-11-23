@@ -48,5 +48,8 @@ public class application extends Application {
         EaseUI.getInstance().init(this, options);
 
  }
+    public void Ondestroy(){
+
+    }
 
 }

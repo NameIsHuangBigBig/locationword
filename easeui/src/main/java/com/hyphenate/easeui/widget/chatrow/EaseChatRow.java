@@ -2,6 +2,9 @@ package com.hyphenate.easeui.widget.chatrow;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -11,12 +14,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.Direct;
+import com.hyphenate.easeui.API;
 import com.hyphenate.easeui.EaseUI;
+import com.hyphenate.easeui.HttpUtil;
+import com.hyphenate.easeui.JSONChange;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseMessageAdapter;
 import com.hyphenate.easeui.domain.EaseAvatarOptions;
@@ -56,7 +63,21 @@ public abstract class EaseChatRow extends LinearLayout {
 
     protected MessageListItemClickListener itemClickListener;
     protected EaseMessageListItemStyle itemStyle;
+    protected Handler handler=new Handler(){
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case 1000:
+                    String result = (String)msg.obj;
+                    JsonObject jo = JSONChange.StringToJsonObject(result);
+                    Log.i("row",result);
+                    setDetail(jo);
+                   break;
+                case 1001:
 
+                    break;
+            }
+        }
+    };
     public EaseChatRow(Context context, EMMessage message, int position, BaseAdapter adapter) {
         super(context);
         this.context = context;
@@ -127,6 +148,8 @@ public abstract class EaseChatRow extends LinearLayout {
                 EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
             } else {
                 EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
+                Log.i("dsdsdsd",message.getFrom());
+                HttpUtil.getInstence().doGet(API.getUserDetail+"?userId="+message.getFrom(),handler);
                 EaseUserUtils.setUserNick(message.getFrom(), usernickView);
             }
         }
@@ -353,6 +376,19 @@ public abstract class EaseChatRow extends LinearLayout {
                 onUpdateView();
             }
         });
+    }
+    protected void setDetail(final JsonObject jo){
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(jo.get("UserAvarl")!=null){
+                    EaseUserUtils.setUserAvatar(context,API.BASEURL+jo.get("UserAvarl").getAsString(), userAvatarView);
+                }
+                EaseUserUtils.setUserNick(jo.get("NickName").getAsString(), usernickView);
+
+            }
+        });
+
     }
 
     protected abstract void onInflateView();

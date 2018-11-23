@@ -13,6 +13,13 @@
     <string name="attach_location">Location</string>
     <string name="attach_video">Video</string>
     <string name="attach_file">File</string>
+    <string name="no_call_data">No call data</string>
+    <string name="network_unstable">Network unstable</string>
+    <string name="switch_camera">Switch camera</string>
+    <string name="capture_image">Capture image</string>
+
+    <string name="have_connected_with">Connected to the peer</string>
+    <string name="call_version_inconsistent">Both call version are inconsistent</string>
     <string name="attach_voice_call">Voice call</string>
     <string name="attach_video_call">Video call</string>
     <string name="user_card">Business card</string>
@@ -117,6 +124,7 @@
     <string name="agree">Agree</string>
     <string name="Group_chat">Group chat</string>
     <string name="chat_room">Chat room</string>
+    <string name="voice_and_video_conference">Voice and video conference</string>
     <string name="not_download">Did not download:</string>
     <string name="is_down_please_wait">Downloading video, please wait a moment</string>
     <string name="Exit_the_group_chat">Exit the group</string>
@@ -296,5 +304,11 @@
     <string name="toast_updatephoto_success">update photo success!</string>
     <string name="toast_updatephoto_fail">update photo fail!</string>
     <string name="quiting_the_chat_room">Exiting chat room</string>
+
+    <!-- For group ack start -->
+    <string name="title_group_notification">Group Notification</string>
+    <string name="title_ack_read_list">Read List</string>
+    <string name="group_ack_read_count">%1$d Read</string>
+    <!-- For group ack end -->
 
 </resources>

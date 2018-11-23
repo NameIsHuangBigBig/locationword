@@ -31,7 +31,10 @@ public class InviteGroupAdapter extends BaseAdapter {
     }
     @Override
     public int getCount() {
-        return data.size();
+        if (data!=null){
+            return data.size();
+        }
+        return 0;
     }
 
     @Override
@@ -57,10 +60,13 @@ public class InviteGroupAdapter extends BaseAdapter {
         final User itemdata=data.get(i);
         Glide.with(context).load(API.BASEURL+itemdata.getUserAvarl())
                 .placeholder(R.drawable.groupmanager_icon_one).into(ivGroupmanagerItemOne);
-        tvGroupmanagerItemOne.setText(itemdata.getUserId());
+        tvGroupmanagerItemOne.setText(itemdata.getNickName());
         if (itemdata.getisJointhisGroup()){
             rb.setVisibility(View.GONE);
             rlMain.setBackgroundColor(Color.rgb(229,229,229));
+        }else{
+            rb.setVisibility(View.VISIBLE);
+            rlMain.setBackgroundColor(Color.WHITE);
         }
         rb.setChecked(false);
         rb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

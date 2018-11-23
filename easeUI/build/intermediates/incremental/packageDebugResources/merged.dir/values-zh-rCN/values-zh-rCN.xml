@@ -191,6 +191,7 @@
     <string name="forward">转发</string>
     <string name="get_failed_please_check">获取失败,请检查网络或稍后再试</string>
     <string name="gorup_not_found">找不到这个群组</string>
+    <string name="group_ack_read_count">%1$d 已读</string>
     <string name="group_chat">群聊</string>
     <string name="group_id">群ID</string>
     <string name="group_is_blocked">正在屏蔽群组……</string>
@@ -275,6 +276,8 @@
     <string name="the_current_chat_room_destroyed">当前聊天室已被创建者解散</string>
     <string name="the_current_group_destroyed">当前群聊已被群创建者解散</string>
     <string name="the_current_network">当前网络不可用，请检查网络设置</string>
+    <string name="title_ack_read_list">已读列表</string>
+    <string name="title_group_notification">群通知</string>
     <string name="title_user_profile">个人资料</string>
     <string name="toast_nick_not_isnull">昵称不能为空！</string>
     <string name="toast_no_support">暂不支持！</string>
@@ -295,6 +298,7 @@
     <string name="video">[视频]</string>
     <string name="video_call">[视频通话]</string>
     <string name="voice">声音</string>
+    <string name="voice_and_video_conference">音视频会议</string>
     <string name="voice_call">[语音通话]</string>
     <string name="voice_prefix">[语音]</string>
     <string name="were_mentioned">[有人@我]</string>

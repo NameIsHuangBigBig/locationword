@@ -9,8 +9,11 @@ public class User {
     String UserSex;
     int IsBreak;
 
-    boolean isJointhisGroup=false;
 
+    boolean isJointhisGroup=false;
+    boolean isOwner=false;
+    boolean isSelectOwner=false;
+    boolean isSelectDelete=false;
     public User(String userId, String userPhone, String nickName, String realName, String password, String userAvarl,
                 String UserSex,int isBreak) {
         super();
@@ -90,5 +93,30 @@ public class User {
 
     public void setUserSex(String userSex) {
         UserSex = userSex;
+    }
+
+
+    public boolean getisOwner() {
+        return isOwner;
+    }
+
+    public void setOwner(boolean owner) {
+        isOwner = owner;
+    }
+
+    public boolean isSelectOwner() {
+        return isSelectOwner;
+    }
+
+    public void setSelectOwner(boolean selectOwner) {
+        isSelectOwner = selectOwner;
+    }
+
+    public boolean isSelectDelete() {
+        return isSelectDelete;
+    }
+
+    public void setSelectDelete(boolean selectDelete) {
+        isSelectDelete = selectDelete;
     }
 }

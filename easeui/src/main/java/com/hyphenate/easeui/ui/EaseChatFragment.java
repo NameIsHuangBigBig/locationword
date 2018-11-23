@@ -10,9 +10,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -25,6 +27,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
@@ -35,8 +38,11 @@ import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.easeui.API;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.EaseUI;
+import com.hyphenate.easeui.HttpUtil;
+import com.hyphenate.easeui.JSONChange;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseEmojicon;
 import com.hyphenate.easeui.domain.EaseUser;
@@ -52,6 +58,7 @@ import com.hyphenate.easeui.widget.EaseChatMessageList;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView;
 import com.hyphenate.easeui.widget.EaseVoiceRecorderView.EaseVoiceRecorderCallback;
 import com.hyphenate.easeui.widget.chatrow.EaseCustomChatRowProvider;
+import com.hyphenate.exceptions.EMServiceNotReadyException;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 import com.hyphenate.util.PathUtil;
@@ -74,7 +81,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected static final int REQUEST_CODE_MAP = 1;
     protected static final int REQUEST_CODE_CAMERA = 2;
     protected static final int REQUEST_CODE_LOCAL = 3;
-
+    protected static final int REQUEST_CODE_VIDEO = 4;
+    protected static final int REQUEST_CODE_MEDIA = 5;
     /**
      * params to fragment
      */
@@ -88,8 +96,8 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
     protected InputMethodManager inputManager;
     protected ClipboardManager clipboard;
-
-    protected Handler handler = new Handler();
+    protected String nickName;
+    protected String arrtar;
     protected File cameraFile;
     protected EaseVoiceRecorderView voiceRecorderView;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -105,11 +113,19 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     static final int ITEM_TAKE_PICTURE = 1;
     static final int ITEM_PICTURE = 2;
     static final int ITEM_LOCATION = 3;
+    static final int ITEM_VIDEO = 4;
+    static final int ITEM_MEDIA = 5;
 
     protected int[] itemStrings = { R.string.attach_take_pic, R.string.attach_picture, R.string.attach_location };
     protected int[] itemdrawables = { R.drawable.ease_chat_takepic_selector, R.drawable.ease_chat_image_selector,
             R.drawable.ease_chat_location_selector };
     protected int[] itemIds = { ITEM_TAKE_PICTURE, ITEM_PICTURE, ITEM_LOCATION };
+
+    protected int[] SitemStrings = { R.string.attach_take_pic, R.string.attach_picture, R.string.attach_location,R.string.attach_voice_call,R.string.attach_video_call };
+    protected int[] Sitemdrawables = { R.drawable.ease_chat_takepic_selector, R.drawable.ease_chat_image_selector,
+            R.drawable.ease_chat_location_selector ,R.drawable.em_chat_voice_call_normal,R.drawable.em_chat_video_call_normal};
+    protected int[] SitemIds = { ITEM_TAKE_PICTURE, ITEM_PICTURE, ITEM_LOCATION ,ITEM_VIDEO,ITEM_MEDIA};
+
     private boolean isMessageListInited;
     protected MyItemClickListener extendMenuItemClickListener;
     protected boolean isRoaming = false;
@@ -132,6 +148,10 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         // check if single chat or group chat
         chatType = fragmentArgs.getInt(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE);
         // userId you are chat with or group id
+        if (chatType==EaseConstant.CHATTYPE_SINGLE){
+            nickName=fragmentArgs.getString("nickName");
+            arrtar = fragmentArgs.getString("HeadImg");
+        }
         toChatUsername = fragmentArgs.getString(EaseConstant.EXTRA_USER_ID);
 
         super.onActivityCreated(savedInstanceState);
@@ -154,7 +174,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
 
         extendMenuItemClickListener = new MyItemClickListener();
         inputMenu = (EaseChatInputMenu) getView().findViewById(R.id.input_menu);
-        registerExtendMenuItem();
+        if(chatType==EaseConstant.CHATTYPE_SINGLE){
+            sregisterExtendMenuItem();
+        }else{
+            registerExtendMenuItem();
+        }
         // init input menu
         inputMenu.init(null);
         inputMenu.setChatInputMenuListener(new ChatInputMenuListener() {
@@ -198,10 +222,16 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
         titleBar.setTitle(toChatUsername);
         if (chatType == EaseConstant.CHATTYPE_SINGLE) {
             // set title
+            Log.i("SILIAO","DDDDD");
+
+            titleBar.setTitle(nickName);
+            //HttpUtil.getInstence().doGet(API.getUserDetail+"?userId="+toChatUsername,handler);
             if(EaseUserUtils.getUserInfo(toChatUsername) != null){
+                Log.i("SILIAO","DDDDD"+"sdsdsd");
                 EaseUser user = EaseUserUtils.getUserInfo(toChatUsername);
                 if (user != null) {
-                    titleBar.setTitle(user.getNick());
+                    Log.i("SILIAO",user.getNick());
+                   // titleBar.setTitle(user.getNick());
                 }
             }
             titleBar.setRightImageResource(R.drawable.ease_mm_title_remove);
@@ -261,6 +291,11 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     protected void registerExtendMenuItem(){
         for(int i = 0; i < itemStrings.length; i++){
             inputMenu.registerExtendMenuItem(itemStrings[i], itemdrawables[i], itemIds[i], extendMenuItemClickListener);
+        }
+    }
+    protected void sregisterExtendMenuItem(){
+        for(int i = 0; i < SitemStrings.length; i++){
+            inputMenu.registerExtendMenuItem(SitemStrings[i], Sitemdrawables[i], SitemIds[i], extendMenuItemClickListener);
         }
     }
 
@@ -659,7 +694,15 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
             case ITEM_LOCATION:
                 startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
                 break;
+            case ITEM_VIDEO:
 
+                callVoice();
+                //startActivityForResult(new Intent(getActivity(), VIDEO.class), REQUEST_CODE_MAP);
+                break;
+            case ITEM_MEDIA:
+                callVideo();
+              //  startActivityForResult(new Intent(getActivity(), EaseBaiduMapActivity.class), REQUEST_CODE_MAP);
+                break;
             default:
                 break;
             }
@@ -1146,5 +1189,56 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
          */
         EaseCustomChatRowProvider onSetCustomChatRowProvider();
     }
+    /**
+     * 拨打语音通话
+     * @param
+     * @throws EMServiceNotReadyException
+     */
+    public void callVoice(){
+        if (!EMClient.getInstance().isConnected()) {
+            Toast.makeText(getActivity(), R.string.not_connect_to_server, Toast.LENGTH_SHORT).show();
+        } else {
 
+            startActivity(new Intent(getActivity(), VoiceCallActivity.class).putExtra("username", toChatUsername)
+                    .putExtra("isComingCall", false).putExtra("nickname",nickName).putExtra("arrtar",arrtar));
+            // voiceCallBtn.setEnabled(false);
+            inputMenu.hideExtendMenuContainer();
+        }
+/*
+        try {//多参数
+            EMClient.getInstance().callManager().makeVoiceCall(username,"ext 扩展内容");
+        } catch (EMServiceNotReadyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }*/
+
+//获取扩展内容
+//        String callExt = EMClient.getInstance().callManager().getCurrentCallSession().getExt();
+    }
+    /**
+     * 拨打视频通话
+     * @param
+     * @throws EMServiceNotReadyException
+     */
+    public void callVideo(){
+        if (!EMClient.getInstance().isConnected())
+            Toast.makeText(getActivity(), R.string.not_connect_to_server, Toast.LENGTH_SHORT).show();
+        else {
+
+            startActivity(new Intent(getActivity(), VideoCallActivity.class).putExtra("username", toChatUsername)
+                    .putExtra("isComingCall", false).putExtra("nickname",nickName));
+
+            // videoCallBtn.setEnabled(false);
+            inputMenu.hideExtendMenuContainer();
+        }
+    /*    try {//多参数
+            EMClient.getInstance().callManager().makeVideoCall(username,"ext 扩展内容");
+        } catch (EMServiceNotReadyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }*/
+
+//获取扩展内容
+        // String callExt = EMClient.getInstance().callManager().getCurrentCallSession().getExt();
+    }
 }

@@ -58,7 +58,8 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
     private Button btnTuic;
     private TextView tvGroupname;
     private TextView tvTs;
-
+    private String OwnerId;
+    private String UserId;
     private Handler handler=new Handler(){
         public void handleMessage(Message msg){
             switch (msg.what){
@@ -75,11 +76,12 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            ivZr.setClickable(true);
+                            ivYc.setClickable(true);
                             ivInvite.setVisibility(View.VISIBLE);
                             addImageView(ja);
                         }
                     });
-
                     break;
                 case 1001:
                     runOnUiThread(new Runnable() {
@@ -104,7 +106,6 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                 getGroupMan();
             }
         }).start();
-
     }
     protected void addListener(){
         iv_map.setOnClickListener(this);
@@ -112,6 +113,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         relaTitleGroupManagerTwoOne .setOnClickListener(this);
         relaTitleGroupManagerTwoTwo .setOnClickListener(this);
         ivZr .setOnClickListener(this);
+        ivZr.setClickable(false);
         ivJj .setOnClickListener(this);
         ivFx .setOnClickListener(this);
         ivYc .setOnClickListener(this);
@@ -131,6 +133,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
             }
             memberList.addAll(result.getData());
         } while (!TextUtils.isEmpty(result.getCursor()) && result.getData().size() == pageSize);
+        getGroupBoss();
         userIdArray=new StringBuffer();
         userIdArray.append("[");
         for (int i=0;i<memberList.size();i++){
@@ -149,6 +152,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         flowLayout= findViewById(R.id.fly);
         loading= findViewById(R.id.loading);
         GroupId=getIntent().getStringExtra(Constant.EaseGroupId);
+        UserId=getSharedPreferences(Constant.logindata,MODE_PRIVATE).getString(Constant.UserId,"");
         Log.i("group","Manage:当前群ID"+GroupId);
         iv_map=findViewById(R.id.iv_map);
         back_groupManager=findViewById(R.id.back_groupManager);
@@ -158,7 +162,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         ivJj = (ImageView) findViewById(R.id.iv_jj);
         ivFx = (ImageView) findViewById(R.id.iv_fx);
         ivYc = (ImageView) findViewById(R.id.iv_yc);
-
+        ivYc.setClickable(false);
         btnTuic = (Button) findViewById(R.id.btn_tuic);
         ivInvite = (ImageView) findViewById(R.id.iv_invite);
         ivInvite.setVisibility(View.INVISIBLE);
@@ -199,12 +203,31 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
             case R.id.rela_title_groupManager_two_two:
                 break;
             case R.id.iv_zr:
+                Log.i(TAG,OwnerId+"\t213213"+UserId);
+                if(OwnerId.equals(UserId)){
+                    HashMap<String,Object>mapzr=new HashMap<>();
+                    mapzr.put("GroupId",GroupId);
+                    mapzr.put("nowOwner",OwnerId);
+                    mapzr.put("InGroupMan",userIdArray.toString());
+                    SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,ChangeGroupOwnerActivity.class,mapzr);
+                }else{
+                    ShowUtil.showText(GroupManagerActivity.this,"只有会长可以使用此功能！");
+                }
                 break;
             case R.id.iv_jj:
                 break;
             case R.id.iv_fx:
                 break;
             case R.id.iv_yc:
+                if(OwnerId.equals(UserId)){
+                    HashMap<String,Object>mapzr=new HashMap<>();
+                    mapzr.put("GroupId",GroupId);
+                    mapzr.put("nowOwner",OwnerId);
+                    mapzr.put("InGroupMan",userIdArray.toString());
+                    SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,DeleteGroupManActivity.class,mapzr);
+                }else{
+                    ShowUtil.showText(GroupManagerActivity.this,"只有会长可以使用此功能！");
+                }
                 break;
             case R.id.btn_tuic:
                 break;
@@ -218,11 +241,17 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
             gmi.setClickListener(new GroupManImage.ClickListener() {
                 @Override
                 public void clickLayout(int Id) {
+                    Log.i("detail",Id+"");
                     HashMap<String,Object> m =new HashMap<>();
                     m.put("UserId",Id+"");
-                    SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,UserDetailActivity.class,m);
+                    SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,GroupManDetailActivity.class,m);
                 }
             });
+            if (ja.get(i).getAsJsonObject().get("UserId").getAsString().equals(OwnerId)){
+                gmi.isMan();
+            }else{
+                gmi.noIsMan();
+            }
             gmi.setImagerView(API.BASEURL+ja.get(i).getAsJsonObject().get("UserAvarl").getAsString());
             gmi.setTvNickname(ja.get(i).getAsJsonObject().get("NickName").getAsString());
             flowLayout.addView(gmi,0);
@@ -243,7 +272,8 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
     public void onDataSynEvent(GroupManagerEvent event) {
         if(event.getResult().equals("groupname")){
             tvGroupname.setText(event.getContent());
-        }else if (event.getResult().equals("inviteman")){
+        }else if (event.getResult().equals("inviteman")
+                || event.getResult().equals("changeman")){
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -262,5 +292,16 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
             }).start();
         }
 
+    }
+    public void getGroupBoss(){
+        EMGroup group = null;
+
+        try {
+            group = EMClient.getInstance().groupManager().getGroupFromServer(GroupId);
+        } catch (HyphenateException e) {
+            e.printStackTrace();
+        }
+        OwnerId=group.getOwner();
+        memberList.add(group.getOwner());
     }
 }

@@ -222,9 +222,11 @@
     <string name="button_send">Send</string>
     <string name="button_uploadlog">Upload the log</string>
     <string name="call_duration">call duration</string>
+    <string name="call_version_inconsistent">Both call version are inconsistent</string>
     <string name="can_not_connect_chat_server_connection">Cannot connect to server</string>
     <string name="cancel">Cancel</string>
     <string name="cant_find_pictures">"Can't find pictures"</string>
+    <string name="capture_image">Capture image</string>
     <string name="change_the_group_name_failed_please">Failed to change the group name, please check the network or try again later</string>
     <string name="chat_room">Chat room</string>
     <string name="chatroom_allow_owner_leave">Allow chatroom owner leave</string>
@@ -273,6 +275,7 @@
     <string name="forward">Forward</string>
     <string name="get_failed_please_check">Failed to retrieve, please check the network or try again later</string>
     <string name="gorup_not_found">Can not find this group</string>
+    <string name="group_ack_read_count">%1$d Read</string>
     <string name="group_chat">Group chat</string>
     <string name="group_id">Group ID</string>
     <string name="group_is_blocked">Blocking the group..</string>
@@ -282,6 +285,7 @@
     <string name="group_search_failed">Search failed</string>
     <string name="hang_up">Hang up</string>
     <string name="hanging_up">Hanging up..</string>
+    <string name="have_connected_with">Connected to the peer</string>
     <string name="have_you_removed">Have you removed from his buddy list</string>
     <string name="illegal_user_name">Illegal user name</string>
     <string name="input_new_nick_hint">Input a new nick</string>
@@ -303,10 +307,12 @@
     <string name="network_anomalies">Network is not available, please check the network!</string>
     <string name="network_isnot_available">The network is not available</string>
     <string name="network_unavailable">The network connection is not available, please check the network</string>
+    <string name="network_unstable">Network unstable</string>
     <string name="newchat">Create new group</string>
     <string name="newnotify">Receiving a new message</string>
     <string name="nickname">NickName</string>
     <string name="nickname_description">Once this nick is set, this nick will be used in push notification (by default this is HuanXin ID ) when the receiver is using the IOS device.</string>
+    <string name="no_call_data">No call data</string>
     <string name="no_more_messages">no more messages</string>
     <string name="not_add_myself">"Can't add myself"</string>
     <string name="not_connect_to_server">Not connect to server, please try again later</string>
@@ -352,12 +358,15 @@
     <string name="setting_nickname">Setting nickname</string>
     <string name="shake">Shake</string>
     <string name="sure_to_empty_this">Clear all messages?</string>
+    <string name="switch_camera">Switch camera</string>
     <string name="temporary_does_not">Currently the video size greater than 10M is not supported!</string>
     <string name="text_ack_msg">Read</string>
     <string name="text_delivered_msg">Delivered</string>
     <string name="the_current_chat_room_destroyed">The current chat room has been dismissed</string>
     <string name="the_current_group_destroyed">The current group has been dismissed</string>
     <string name="the_current_network">The current network is not available, please check the network Settings</string>
+    <string name="title_ack_read_list">Read List</string>
+    <string name="title_group_notification">Group Notification</string>
     <string name="title_user_profile">User Profile</string>
     <string name="toast_nick_not_isnull">nick cannot be empty!</string>
     <string name="toast_no_support">No Support!</string>
@@ -372,6 +381,7 @@
     <string name="video">[Video]</string>
     <string name="video_call">[Video call]</string>
     <string name="voice">Voice</string>
+    <string name="voice_and_video_conference">Voice and video conference</string>
     <string name="voice_call">[Voice call]</string>
     <string name="voice_prefix">[Voice]</string>
     <string name="were_mentioned">You were montioned</string>

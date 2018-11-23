@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -63,6 +64,7 @@ public class EaseChatMessageList extends RelativeLayout{
         this.toChatUsername = toChatUsername;
         
         conversation = EMClient.getInstance().chatManager().getConversation(toChatUsername, EaseCommonUtils.getConversationType(chatType), true);
+        Log.i("messagelist",toChatUsername);
         messageAdapter = new EaseMessageAdapter(context, toChatUsername, chatType, listView);
         messageAdapter.setItemStyle(itemStyle);
         messageAdapter.setCustomChatRowProvider(customChatRowProvider);

@@ -82,15 +82,17 @@ public class MessageFragment extends Fragment {
             @Override
             public void onListItemClicked(EMConversation conversation) {
                 List<EMMessage> s=conversation.getAllMessages();
-                Log.i("ckucj","sdsd");
+
                 EMGroup group = EMClient.getInstance().groupManager().getGroup(conversation.conversationId());
                if (group != null){
+                 //  Log.i("ckucj","group");
                    startActivity(new Intent(getContext(), ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID,conversation.conversationId())
                            .putExtra(Constant.EaseGroupId,conversation.conversationId())
-                           .putExtra(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_GROUP));
+                           .putExtra(Constant.EaseChattype, "Group"));
                }else{
+                  // Log.i("ckucj","single"+EaseConstant.CHATTYPE_SINGLE+"\ts\t"+Constant.EaseChattype);
                    startActivity(new Intent(getContext(), ChatActivity.class).putExtra(EaseConstant.EXTRA_USER_ID,conversation.conversationId())
-                           .putExtra(EaseConstant.EXTRA_CHAT_TYPE, EaseConstant.CHATTYPE_SINGLE)
+                           .putExtra(Constant.EaseChattype, "Single")
                            .putExtra(Constant.EaseGroupId,conversation.conversationId()));
 
                }

@@ -7,11 +7,18 @@
     android:orientation="vertical"
     android:gravity="center">
 
+    <LinearLayout
+        android:id="@+id/ll_bg"
+        android:padding="2dp"
+        android:background="#FF0000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
     <ImageView
         android:id="@+id/iv_head"
         android:background="@drawable/groupmanager_icon_one"
         android:layout_width="65dip"
         android:layout_height="65dip"/>
+    </LinearLayout>
     <TextView
         android:gravity="center"
         android:singleLine="true"

@@ -284,12 +284,25 @@ public class InviteGroupManActivity extends AppCompatActivity implements View.On
     }
     @Override
     public boolean onQueryTextSubmit(String s) {
-        return false;
+        if(s.equals("")){
+            data.clear();
+            page=1;
+            requestData();
+        }else{
+            HttpUtil.getInstence().doGet(API.SearchMantoInvite+"?userName="+s,handler,500);
+        }
+        return true;
     }
 
     @Override
     public boolean onQueryTextChange(String s) {
-        HttpUtil.getInstence().doGet(API.SearchMantoInvite+"?userName="+s,handler,500);
-        return true;
+        if(s.equals("")){
+            data.clear();
+            page=1;
+            requestData();
+        }else{
+            HttpUtil.getInstence().doGet(API.SearchMantoInvite+"?userName="+s,handler,500);
+        }
+       return true;
     }
 }

@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         register.setOnClickListener(this);
     }
     public void initView(){
-        loadingDialog=new LoadingDialog(LoginActivity.this,"请稍候...");
+        loadingDialog=new LoadingDialog(LoginActivity.this,"数据同步中...");
         etTelphonenumber = (EditText) findViewById(R.id.et_telphonenumber);
         etPassward = (EditText) findViewById(R.id.et_passward);
         btLogin = (Button) findViewById(R.id.bt_login);
@@ -159,6 +159,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         EventBus.getDefault().unregister(this);
     }
     public void LoginEMClient(String userName){
+        //Log.d("main", "登录聊天服务器成功！"+userName);
         EMClient.getInstance().login(userName,"123456",new EMCallBack() {//回调
             @Override
             public void onSuccess() {
@@ -168,8 +169,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        EMClient.getInstance().chatManager().loadAllConversations();
-                        EMClient.getInstance().groupManager().loadAllGroups();
+//                        EMClient.getInstance().chatManager().loadAllConversations();
+//                        EMClient.getInstance().groupManager().loadAllGroups();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

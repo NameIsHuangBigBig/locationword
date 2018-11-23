@@ -1,6 +1,8 @@
 package com.hyphenate.easeui.adapter;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -14,13 +16,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
+import com.google.gson.JsonObject;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMConversation.EMConversationType;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.easeui.API;
 import com.hyphenate.easeui.EaseUI;
+import com.hyphenate.easeui.HttpUtil;
+import com.hyphenate.easeui.JSONChange;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.domain.EaseAvatarOptions;
 import com.hyphenate.easeui.domain.EaseUser;
@@ -55,6 +61,24 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
     protected int secondarySize;
     protected float timeSize;
 
+    protected Handler handler=new Handler(){
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case 1000:
+                    String result = (String)msg.obj;
+                    final JsonObject jo =JSONChange.StringToJsonObject(result);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+//                            EaseUserUtils.setUserAvatar(getContext(), API.BASEURL+jo.get("UserAvarl").getAsString(), holder.avatar);
+//                            EaseUserUtils.setUserNick(API.BASEURL+jo.get("NickName").getAsString(), holder.name);
+
+                        }
+                    });
+                    break;
+            }
+        }
+    };
     public EaseConversationAdapter(Context context, int resource,
                                    List<EMConversation> objects) {
         super(context, resource, objects);
@@ -107,6 +131,7 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
         final EMConversation conversation = getItem(position);
         // get username or group id
         String username = conversation.conversationId();
+
         holder.swipeMenuLayout.quickClose();
         if (conversation.getType() == EMConversationType.GroupChat) {
             String groupId = conversation.conversationId();
@@ -125,8 +150,8 @@ public class EaseConversationAdapter extends ArrayAdapter<EMConversation> {
             holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
             holder.motioned.setVisibility(View.GONE);
         }else {
-            EaseUserUtils.setUserAvatar(getContext(), username, holder.avatar);
-            EaseUserUtils.setUserNick(username, holder.name);
+            HttpUtil.getInstence().doGet(API.getUserDetail+"?userId="+username,handler,holder.avatar, holder.name,getContext());
+
             holder.motioned.setVisibility(View.GONE);
         }
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {

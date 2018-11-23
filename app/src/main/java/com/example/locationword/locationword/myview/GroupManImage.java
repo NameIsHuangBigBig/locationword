@@ -20,6 +20,7 @@ public class GroupManImage extends LinearLayout implements View.OnClickListener{
     private ImageView ivHead;
     private TextView tvNickname;
     private LinearLayout llMain;
+    private LinearLayout llBg;
     private ClickListener clickListener;
     private int index;
     public GroupManImage(Context context) {
@@ -39,6 +40,8 @@ public class GroupManImage extends LinearLayout implements View.OnClickListener{
         ivHead = (ImageView) findViewById(R.id.iv_head);
         tvNickname = (TextView) findViewById(R.id.tv_nickname);
         llMain = (LinearLayout) findViewById(R.id.ll_main);
+        llBg = (LinearLayout) findViewById(R.id.ll_bg);
+
     }
     protected void addListener(){
         llMain.setOnClickListener(this);
@@ -57,6 +60,12 @@ public class GroupManImage extends LinearLayout implements View.OnClickListener{
 
     public interface ClickListener{
         void clickLayout(int Id);
+    }
+    public void isMan(){
+        llBg.setBackgroundColor(Color.RED);
+    }
+    public void noIsMan(){
+        llBg.setBackgroundColor(Color.WHITE);
     }
     public void setImagerView(String avatrl){
         Glide.with(context).load(avatrl).placeholder(R.drawable.groupmanager_icon_one).into(ivHead);

@@ -1,6 +1,7 @@
 package com.example.locationword.locationword;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,8 @@ import com.example.locationword.locationword.tool.JSONChange;
 import com.example.locationword.locationword.tool.ShowUtil;
 import com.example.locationword.locationword.tool.SkipUtils;
 import com.google.gson.JsonObject;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.easeui.utils.CallReceiver;
 import com.mob.tools.gui.ViewPagerAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -48,13 +51,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MenuItem menuItem;
     private TextView tv_title;
     TextView tv_add;
+    private CallReceiver callReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         initView();
         addListener();
-
+        addCallReceive();
 
     }
     public void initView(){
@@ -139,5 +143,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         }
     }
-
+    public void onDestroy(){
+       super.onDestroy();
+        EMClient.getInstance().logout(true);
+    }
+    private void addCallReceive(){
+        callReceiver=new CallReceiver();
+       // String id=JPushInterface.getRegistrationID(this);
+        IntentFilter callFilter = new IntentFilter(EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
+        registerReceiver(callReceiver, callFilter);
+    }
 }

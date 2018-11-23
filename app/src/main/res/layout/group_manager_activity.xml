@@ -15,7 +15,6 @@
         android:layout_height="40dp"
         android:gravity="center_vertical"
         android:background="@color/colorBackground">
-
         <ImageView
             android:id="@+id/back_groupManager"
             android:layout_width="35dp"
@@ -44,12 +43,7 @@
         android:layout_marginTop="12dp"
         android:gravity="start"
         android:paddingLeft="10dp">
-        <com.example.locationword.locationword.myview.GroupManImage
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        </com.example.locationword.locationword.myview.GroupManImage>
-        <ImageView
+       <ImageView
             android:id="@+id/iv_invite"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="10dp"
