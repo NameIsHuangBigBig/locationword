@@ -78,6 +78,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                         public void run() {
                             ivZr.setClickable(true);
                             ivYc.setClickable(true);
+                            iv_map.setClickable(true);
                             ivInvite.setVisibility(View.VISIBLE);
                             addImageView(ja);
                         }
@@ -163,6 +164,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         ivFx = (ImageView) findViewById(R.id.iv_fx);
         ivYc = (ImageView) findViewById(R.id.iv_yc);
         ivYc.setClickable(false);
+        iv_map.setClickable(false);
         btnTuic = (Button) findViewById(R.id.btn_tuic);
         ivInvite = (ImageView) findViewById(R.id.iv_invite);
         ivInvite.setVisibility(View.INVISIBLE);
@@ -178,7 +180,10 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.iv_map:
-                SkipUtils.skipActivity(GroupManagerActivity.this,MapActivity.class);
+                HashMap<String,Object>mapmap=new HashMap<>();
+               // map.put("GroupId",GroupId);
+                mapmap.put("InGroupMan",userIdArray.toString());
+                SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,MapActivity.class,mapmap);
                 break;
             case R.id.back_groupManager:
                 GroupManagerActivity.this.finish();

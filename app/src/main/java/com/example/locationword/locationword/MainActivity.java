@@ -1,7 +1,10 @@
 package com.example.locationword.locationword;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -23,10 +26,14 @@ import com.example.locationword.locationword.Adapter.FragmentAdapter;
 import com.example.locationword.locationword.Fragment.GroupFragment;
 import com.example.locationword.locationword.Fragment.MeFragment;
 import com.example.locationword.locationword.Fragment.MessageFragment;
+import com.example.locationword.locationword.event.GroupUpdateEvent;
+import com.example.locationword.locationword.event.LocationEvent;
 import com.example.locationword.locationword.event.MessageEvent;
 import com.example.locationword.locationword.http.API;
 import com.example.locationword.locationword.http.HttpUtil;
 import com.example.locationword.locationword.myview.LoadingDialog;
+import com.example.locationword.locationword.tool.BDLocation;
+import com.example.locationword.locationword.tool.Constant;
 import com.example.locationword.locationword.tool.JSONChange;
 import com.example.locationword.locationword.tool.ShowUtil;
 import com.example.locationword.locationword.tool.SkipUtils;
@@ -52,6 +59,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView tv_title;
     TextView tv_add;
     private CallReceiver callReceiver;
+    private String TAG="MainActivity";
+    private Context context = MainActivity.this;
+    private String userId;
+    private BDLocation bdl;
+    private Handler handler=new Handler(){
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case 1000:
+//                    String result = (String)msg.obj;
+//                    JsonObject jo =JSONChange.StringToJsonObject(result);
+//                    Log.i(TAG,jo.get("message").getAsString());
+                    break;
+                case 1001:
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ShowUtil.showText(context,"网络异常！");
+                        }
+                    });
+                    break;
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +89,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         addListener();
         addCallReceive();
-
+        bdl=new BDLocation(getApplicationContext());//直接一次定位
     }
     public void initView(){
+        userId = getSharedPreferences(Constant.logindata,MODE_PRIVATE
+        ).getString(Constant.UserId,"");
         tv_add=findViewById(R.id.tv_add);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigationView);
         //  BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
@@ -143,14 +175,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         }
     }
-    public void onDestroy(){
-       super.onDestroy();
-        EMClient.getInstance().logout(true);
-    }
+
     private void addCallReceive(){
         callReceiver=new CallReceiver();
        // String id=JPushInterface.getRegistrationID(this);
         IntentFilter callFilter = new IntentFilter(EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
         registerReceiver(callReceiver, callFilter);
+    }
+    public void addLocationData(double lat,double lon){
+        HashMap<String,String> map = new HashMap<>();
+        map.put("userId",userId);
+        map.put("lat",lat+"");
+        map.put("lon",lon+"");
+        HttpUtil.getInstence().doPost(API.addUserLocation,map,handler);
+    }
+
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);//订阅
+        }
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        LoginOutLocation();
+       // EMClient.getInstance().logout(true);
+        bdl.stop();
+        EventBus.getDefault().unregister(this);//订阅
+        Log.i("application","logout");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
+    public void onDataSynEvent(LocationEvent event) {
+        Log.i(TAG,event.getLat()+","+event.getLon());
+        addLocationData(event.getLat(),event.getLon());
+    }
+    public void LoginOutLocation(){
+        HttpUtil.getInstence().doGet(API.changeLocationState+"?userId="+getSharedPreferences(Constant.logindata,MODE_PRIVATE
+        ).getString(Constant.UserId,"")+"&isOnline=0",handler);
     }
 }

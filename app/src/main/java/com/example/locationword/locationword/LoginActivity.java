@@ -158,7 +158,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loadingDialog.close();
         EventBus.getDefault().unregister(this);
     }
-    public void LoginEMClient(String userName){
+    public void LoginEMClient(final String userName){
         //Log.d("main", "登录聊天服务器成功！"+userName);
         EMClient.getInstance().login(userName,"123456",new EMCallBack() {//回调
             @Override
@@ -194,22 +194,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onError(int code, String message) {
 //                ShowUtil.showText(LoginActivity.this,"服务器异常");
                 if(message.equals("User is already login")){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            EMClient.getInstance().chatManager().loadAllConversations();
-                            EMClient.getInstance().groupManager().loadAllGroups();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loadingDialog.close();
-                                }
-                            });
-
-                            SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
-                            LoginActivity.this.finish();
-                        }
-                    }).start();
+                    EMClient.getInstance().logout(true);
+                    LoginEMClient(userName);
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            EMClient.getInstance().chatManager().loadAllConversations();
+//                            EMClient.getInstance().groupManager().loadAllGroups();
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    loadingDialog.close();
+//                                }
+//                            });
+//
+//                            SkipUtils.skipActivity(LoginActivity.this,MainActivity.class);
+//                            LoginActivity.this.finish();
+//                        }
+//                    }).start();
                       }
                 Log.d("main", "登录聊天服务器失败！"+message);
             }

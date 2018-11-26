@@ -4,9 +4,15 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.util.Log;
 
 
 import com.baidu.mapapi.SDKInitializer;
+import com.example.locationword.locationword.http.API;
+import com.example.locationword.locationword.http.HttpUtil;
+import com.example.locationword.locationword.tool.Constant;
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.EaseUI;
 import com.hyphenate.easeui.domain.EaseUser;
@@ -17,11 +23,15 @@ import com.umeng.socialize.PlatformConfig;
 import java.util.Iterator;
 import java.util.List;
 
+import java.util.logging.LogRecord;
+
 import static com.hyphenate.easeui.utils.EaseUserUtils.getUserInfo;
 
 public class application extends Application {
     String TAG="app";
     Context appContext;
+    private Handler handler=new Handler() {
+    };
     public void onCreate(){
         super.onCreate();
         EaseClientInit();
@@ -48,8 +58,15 @@ public class application extends Application {
         EaseUI.getInstance().init(this, options);
 
  }
-    public void Ondestroy(){
-
+    public void onTerminate(){
+       super.onTerminate();
+        Log.i("application","logout");
+        LoginOutLocation();
+        EMClient.getInstance().logout(true);
+    }
+    public void LoginOutLocation(){
+        HttpUtil.getInstence().doGet(API.changeLocationState+"?userId="+getSharedPreferences(Constant.logindata,MODE_PRIVATE
+        ).getString(Constant.UserId,"")+"&isOnline=0",handler);
     }
 
 }
