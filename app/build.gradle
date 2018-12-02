@@ -22,7 +22,7 @@ android {
     }
     compileSdkVersion 28
     defaultConfig {
-       // multiDexEnabled true
+        multiDexEnabled true
         applicationId "com.example.locationword.locationword"
         minSdkVersion 15
         targetSdkVersion 28

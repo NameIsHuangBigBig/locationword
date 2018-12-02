@@ -75,6 +75,18 @@ public abstract class EaseChatRow extends LinearLayout {
                 case 1001:
 
                     break;
+                case 500:
+                    String result1 = (String)msg.obj;
+                    final JsonObject jo1 = JSONChange.StringToJsonObject(result1);
+                    Log.i("userAvarl",API.BASEURL+jo1.get("UserAvarl").getAsString());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            EaseUserUtils.setUserAvatar(context, API.BASEURL+jo1.get("UserAvarl").getAsString(), userAvatarView);
+                        }
+                    });
+
+                    break;
             }
         }
     };
@@ -145,6 +157,8 @@ public abstract class EaseChatRow extends LinearLayout {
         if(userAvatarView != null) {
             //set nickname and avatar
             if (message.direct() == Direct.SEND) {
+                Log.i("userAvarl","send");
+                HttpUtil.getInstence().doGet(API.getUserDetail+"?userId="+message.getFrom(),handler,500);
                 EaseUserUtils.setUserAvatar(context, EMClient.getInstance().getCurrentUser(), userAvatarView);
             } else {
                 EaseUserUtils.setUserAvatar(context, message.getFrom(), userAvatarView);
@@ -382,6 +396,7 @@ public abstract class EaseChatRow extends LinearLayout {
             @Override
             public void run() {
                 if(jo.get("UserAvarl")!=null){
+                    Log.i("userAvarl",API.BASEURL+jo.get("UserAvarl").getAsString());
                     EaseUserUtils.setUserAvatar(context,API.BASEURL+jo.get("UserAvarl").getAsString(), userAvatarView);
                 }
                 EaseUserUtils.setUserNick(jo.get("NickName").getAsString(), usernickView);

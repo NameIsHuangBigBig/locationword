@@ -1,9 +1,11 @@
 package com.example.locationword.locationword;
 
+import android.content.DialogInterface;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.locationword.locationword.event.GroupManagerEvent;
 import com.example.locationword.locationword.event.GroupUpdateEvent;
+import com.example.locationword.locationword.event.MessageUpdateEvent;
 import com.example.locationword.locationword.http.API;
 import com.example.locationword.locationword.http.HttpUtil;
 import com.example.locationword.locationword.myview.GroupManImage;
@@ -64,6 +67,9 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         public void handleMessage(Message msg){
             switch (msg.what){
                 case 1:
+                    if(OwnerId.equals(UserId)){
+                        btnTuic.setText("解散群组");
+                    }
                     Map<String,String> m=new HashMap<String,String>();
                     m.put("userIdarray",userIdArray.toString());
                     Log.i(TAG,"userIdarray"+userIdArray.toString());
@@ -79,6 +85,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                             ivZr.setClickable(true);
                             ivYc.setClickable(true);
                             iv_map.setClickable(true);
+                            btnTuic.setClickable(true);
                             ivInvite.setVisibility(View.VISIBLE);
                             addImageView(ja);
                         }
@@ -166,6 +173,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         ivYc.setClickable(false);
         iv_map.setClickable(false);
         btnTuic = (Button) findViewById(R.id.btn_tuic);
+        btnTuic.setClickable(false);
         ivInvite = (ImageView) findViewById(R.id.iv_invite);
         ivInvite.setVisibility(View.INVISIBLE);
         tvGroupname = (TextView) findViewById(R.id.tv_groupname);
@@ -189,21 +197,29 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                 GroupManagerActivity.this.finish();
                 break;
             case R.id.rela_title_groupManager_two_one:
-                String s="";
-                HashMap<String,Object>m=new HashMap<>();
-                m.put("GroupId",GroupId);
-                EMGroup group = EMClient.getInstance().groupManager().getGroup(GroupId);
-                if (group != null){
-                     s=group.getGroupName();
+                if(OwnerId.equals(UserId)){
+                    String s="";
+                    HashMap<String,Object>m=new HashMap<>();
+                    m.put("GroupId",GroupId);
+                    EMGroup group = EMClient.getInstance().groupManager().getGroup(GroupId);
+                    if (group != null){
+                        s=group.getGroupName();
+                    }
+                    m.put("nowGroupName",s);
+                    SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,ChangeGroupNameActivity.class,m);
+                }else{
+                    ShowUtil.showText(GroupManagerActivity.this,"只有会长可以使用此功能！");
                 }
-                m.put("nowGroupName",s);
-                SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,ChangeGroupNameActivity.class,m);
                 break;
             case R.id.iv_invite:
-                HashMap<String,Object>map=new HashMap<>();
-                map.put("GroupId",GroupId);
-                map.put("InGroupMan",userIdArray.toString());
-                SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,InviteGroupManActivity.class,map);
+                if(OwnerId.equals(UserId)){
+                    HashMap<String,Object>map=new HashMap<>();
+                    map.put("GroupId",GroupId);
+                    map.put("InGroupMan",userIdArray.toString());
+                    SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,InviteGroupManActivity.class,map);
+                }else{
+                    ShowUtil.showText(GroupManagerActivity.this,"只有会长可以使用此功能！");
+                }
                 break;
             case R.id.rela_title_groupManager_two_two:
                 break;
@@ -235,6 +251,69 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                 }
                 break;
             case R.id.btn_tuic:
+                if(OwnerId.equals(UserId)){
+                    new AlertDialog.Builder(GroupManagerActivity.this)
+                            .setTitle("确定后将解散群？")
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                EMClient.getInstance().groupManager().destroyGroup(GroupId);//需异步处理步处理
+                                                    EventBus.getDefault().post(new MessageUpdateEvent(true));
+                                                    EventBus.getDefault().post(new GroupUpdateEvent(true));
+
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            GroupManagerActivity.this.finish();
+                                                        }
+                                                    });
+                                                } catch (HyphenateException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }).start();
+
+                                }
+                            })
+                            .setNegativeButton("取消",null)
+                            .create().show();
+                }else{
+                    new AlertDialog.Builder(GroupManagerActivity.this)
+                            .setTitle("确定后将退出群？")
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    EMClient.getInstance().groupManager().leaveGroup(GroupId);//需异步处理
+                                                    EventBus.getDefault().post(new MessageUpdateEvent(true));
+                                                    EventBus.getDefault().post(new GroupUpdateEvent(true));
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            GroupManagerActivity.this.finish();
+                                                        }
+                                                    });
+                                                } catch (HyphenateException e) {
+                                                e.printStackTrace();
+                                            }
+                                            }
+                                        }).start();
+
+                                }
+                            })
+                            .setNegativeButton("取消",null)
+                            .create().show();
+                }
+
                 break;
         }
     }
@@ -258,6 +337,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                 gmi.noIsMan();
             }
             gmi.setImagerView(API.BASEURL+ja.get(i).getAsJsonObject().get("UserAvarl").getAsString());
+            Log.i("image",ja.get(i).getAsJsonObject().get("UserAvarl").getAsString());
             gmi.setTvNickname(ja.get(i).getAsJsonObject().get("NickName").getAsString());
             flowLayout.addView(gmi,0);
         }

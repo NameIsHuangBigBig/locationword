@@ -58,6 +58,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                             if(result.equals("密码错误")||result.equals("用户不存在")){
+                                    loadingDialog.close();
+                             }
 
                              ShowUtil.showText(LoginActivity.this,result);
                         }
@@ -67,7 +70,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         final String userId=jo.get("userid").getAsString();
                         final String userPhone=jo.get("userphone").getAsString();
                         SharedPreferences preferences = getSharedPreferences(Constant.logindata,MODE_PRIVATE);
-                        preferences.edit().putString(Constant.UserId,userId).putString(Constant.UserPhone,userPhone).commit();
+                        preferences.edit().putString(Constant.UserId,userId).putString(Constant.UserPhone,userPhone)
+                                .commit();
                         LoginEMClient(userId);
                     }
                     break;
@@ -82,6 +86,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
 
                     break;
+                case 101:
+                    SharedPreferences preferences = getSharedPreferences(Constant.logindata,MODE_PRIVATE);
+                    String userId = preferences.getString(Constant.UserId,"");
+
+                    LoginEMClient(userId);
+                    break;
             }
         }
     };
@@ -92,7 +102,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //loadingDialog=new LoadingDialog(LoginActivity.this,"请稍候...");
         initView();
         onClicked();
-
+        checkAutoLogin();
         // HttpUtil.getInstence().doPost("http://172.17.146.136:8082/MVCl_w/Login/checklogin",map);
     }
     public void onClicked(){
@@ -217,6 +227,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         });
     }
+    protected void checkAutoLogin(){
+        SharedPreferences preferences = getSharedPreferences(Constant.logindata,MODE_PRIVATE);
+        Log.i("tag",preferences.getString(Constant.UserId,""));
+        if (preferences!=null) {
+            if (!preferences.getString(Constant.UserId, "").equals("")) {
+                if (preferences.getBoolean(Constant.autoLogin,true)){
+                    loadingDialog.show();
+                    handler.sendEmptyMessage(101);
+                }
 
+            }
+        }
+
+    }
 
 }

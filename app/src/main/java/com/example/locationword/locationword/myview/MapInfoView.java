@@ -1,6 +1,7 @@
 package com.example.locationword.locationword.myview;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,13 +11,17 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.bumptech.glide.Glide;
 import com.example.locationword.locationword.ChatActivity;
 import com.example.locationword.locationword.R;
@@ -29,6 +34,7 @@ import com.example.locationword.locationword.tool.ShowUtil;
 import com.google.gson.JsonObject;
 import com.hyphenate.easeui.API;
 import com.hyphenate.easeui.EaseConstant;
+import com.umeng.commonsdk.debug.E;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -45,8 +51,8 @@ public class MapInfoView extends LinearLayout implements View.OnClickListener {
     private Button downLayoutPersondetail;
     private String userId;
     private Context context;
-    private Button btnBx;
-    private Button btnQx;
+    private RelativeLayout btnBx;
+    private RelativeLayout btnQx;
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -103,8 +109,8 @@ public class MapInfoView extends LinearLayout implements View.OnClickListener {
         tvRealname = (TextView) findViewById(R.id.tv_realname);
         tvSex = (TextView) findViewById(R.id.tv_sex);
         downLayoutPersondetail = (Button) findViewById(R.id.down_layout_persondetail);
-        btnBx = (Button) findViewById(R.id.btn_bx);
-        btnQx = (Button) findViewById(R.id.btn_qx);
+        btnBx = (RelativeLayout) findViewById(R.id.btn_bx);
+        btnQx = (RelativeLayout) findViewById(R.id.btn_qx);
     }
 
     public void addListener() {
@@ -120,7 +126,7 @@ public class MapInfoView extends LinearLayout implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_close:
-                EventBus.getDefault().post(new MapEvent(true));
+                EventBus.getDefault().post(new MapEvent("close"));
                 break;
             case R.id.img_head_persondetail:
                 break;
@@ -128,16 +134,12 @@ public class MapInfoView extends LinearLayout implements View.OnClickListener {
                 Intent intent = new Intent(Intent.ACTION_CALL);
                 Uri data = Uri.parse("tel:" + tvPhonePersondetail.getText().toString());
                 intent.setData(data);
+               // Log.i("sdsdsd","clickPhone");
                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                    ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.CALL_PHONE},100);
                     return;
                 }
+                Log.i("sdsdsd","clickPhone");
                 context.startActivity(intent);
                 break;
             case R.id.down_layout_persondetail:
@@ -146,11 +148,13 @@ public class MapInfoView extends LinearLayout implements View.OnClickListener {
                         .putExtra(Constant.EaseGroupId,userId));
                 break;
             case R.id.btn_bx:
+                Log.i("sdsdsd","click");
+                EventBus.getDefault().post(new MapEvent("daohan"));
                 break;
             case R.id.btn_qx:
+                EventBus.getDefault().post(new MapEvent("qxdaohan"));
                 break;
         }
-
     }
     public void analysis(final JsonObject jo){
         handler.post(new Runnable() {

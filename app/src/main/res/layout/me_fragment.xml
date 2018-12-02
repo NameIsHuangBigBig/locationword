@@ -11,8 +11,7 @@
             android:id="@+id/img_head"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_margin="10dp"
-            android:background="#000000"/>
+            android:layout_margin="10dp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -83,42 +82,12 @@
         android:layout_below="@+id/realname_layout"
         android:background="#eae8e8"/>
 
-    <LinearLayout
-        android:id="@+id/age_layout"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_below="@+id/b_tv2"
-        android:orientation="horizontal">
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/age"/>
-        <TextView
-            android:layout_width="220dp"
-            android:layout_height="match_parent"
-            android:text="年龄"
-            android:gravity="center_vertical"/>
-        <TextView
-            android:id="@+id/tv_age"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="18"/>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/b_tv3"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_below="@+id/age_layout"
-        android:background="#eae8e8"/>
 
     <LinearLayout
         android:id="@+id/sex_layout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_below="@+id/b_tv3"
+        android:layout_below="@+id/b_tv2"
         android:orientation="horizontal">
         <ImageView
             android:layout_width="40dp"
@@ -144,10 +113,30 @@
         android:layout_height="3dp"
         android:layout_below="@+id/sex_layout"
         android:background="#eae8e8"/>
+    <LinearLayout
+        android:id="@+id/shez"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/b_tv4"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_gravity="center_vertical"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/me_offser"/>
+        <TextView
+            android:layout_width="220dp"
+            android:layout_height="match_parent"
+            android:text="设置"
+            android:gravity="center_vertical"/>
+
+    </LinearLayout>
     <TextView
+        android:id="@+id/b_tv5"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="#eae8e8"
-        android:layout_above="@+id/down_layout"/>
-
+        android:layout_below="@+id/shez"
+        android:background="#eae8e8"/>
 </RelativeLayout>

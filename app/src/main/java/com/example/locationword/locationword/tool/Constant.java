@@ -10,4 +10,9 @@ public class Constant {
     public static final String UserId="userid";
 
     public static final String UserPhone="userphone";
+
+    public static String getLocation="getLocation";
+    public static String autoLogin="autoLogin";
+    public static String autoTuis="autoTuis";
+
 }

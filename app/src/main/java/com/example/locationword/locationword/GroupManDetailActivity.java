@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.locationword.locationword.bean.User;
 import com.example.locationword.locationword.http.HttpUtil;
 import com.example.locationword.locationword.tool.Constant;
 import com.example.locationword.locationword.tool.JSONChange;
@@ -66,6 +67,9 @@ public class GroupManDetailActivity extends AppCompatActivity implements View.On
         tvRealname = (TextView) findViewById(R.id.tv_realname);
         tvSex = (TextView) findViewById(R.id.tv_sex);
         downLayoutPersondetail = (Button) findViewById(R.id.down_layout_persondetail);
+        if(UserId.equals(getSharedPreferences(Constant.logindata,MODE_PRIVATE).getString(Constant.UserId,""))){
+            downLayoutPersondetail.setVisibility(View.GONE);
+        }
     }
     protected void requestData(){
         HttpUtil.getInstence().doGet(API.getUserDetail+"?userId="+UserId,handler);
