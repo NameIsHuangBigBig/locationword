@@ -1,16 +1,17 @@
 package com.example.locationword.locationword.event;
 
 public class MapEvent {
-    boolean close ;
-    public MapEvent(boolean close) {
+    String close;
+
+    public MapEvent(String close) {
         this.close=close;
     }
 
-    public boolean isClose() {
+    public String isClose() {
         return close;
     }
 
-    public void setClose(boolean close) {
+    public void setClose(String close) {
         this.close = close;
     }
 }

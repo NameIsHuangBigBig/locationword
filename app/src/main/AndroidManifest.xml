@@ -27,9 +27,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:allowBackup="true"
+        android:versionName="1.0"
+        android:versionCode="1"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -45,6 +47,7 @@
         <!-- 声明sdk所需的service SDK核心功能-->
         <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote">
         </service>
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -89,7 +92,9 @@
         <activity android:name=".ChangeGroupOwnerActivity"></activity>
         <activity android:name=".DeleteGroupManActivity"></activity>
         <activity android:name=".GroupManDetailActivity"></activity>
-
+        <activity android:name=".WNaviGuideActivity"></activity>
+        <activity android:name=".BNaviGuideActivity"></activity>
+        <activity android:name=".SetActivity"></activity>
         <activity android:name="com.hyphenate.easeui.ui.VideoCallActivity"></activity>
         <activity android:name="com.hyphenate.easeui.ui.VoiceCallActivity"></activity>
         <activity android:name="com.hyphenate.easeui.ui.EaseShowBigImageActivity"></activity>

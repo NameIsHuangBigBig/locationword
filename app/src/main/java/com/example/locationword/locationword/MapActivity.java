@@ -1,6 +1,7 @@
 package com.example.locationword.locationword;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +12,13 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.BMapManager;
+import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
+import com.baidu.mapapi.bikenavi.adapter.IBEngineInitListener;
+import com.baidu.mapapi.bikenavi.adapter.IBRoutePlanListener;
+import com.baidu.mapapi.bikenavi.model.BikeRoutePlanError;
+import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -25,7 +33,14 @@ import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.walknavi.WalkNavigateHelper;
+import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
+import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
+import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
+import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.example.locationword.locationword.Thread.GetLocationThread;
+import com.example.locationword.locationword.bean.LocationItem;
+import com.example.locationword.locationword.clusterutil.clustering.ClusterManager;
 import com.example.locationword.locationword.event.GroupUpdateEvent;
 import com.example.locationword.locationword.event.MapEvent;
 import com.example.locationword.locationword.http.API;
@@ -58,8 +73,14 @@ public class MapActivity extends AppCompatActivity {
     private String TAG = "MapActivity";
     private double Jundgelat=0;
     private double Jundgelon=0;
+    private double tolat=0;
+    private double tolon=0;
+    private WalkNaviLaunchParam param;
+    private BikeNaviLaunchParam bparam;
     private boolean lastLocation=false;
     private String userId;
+    ClusterManager mClusterManager;
+    List<LocationItem> items = new ArrayList<>();
     private List<OverlayOptions> options = new ArrayList<OverlayOptions>();
     private List<GetLocationThread>locationArray = new ArrayList<>();
     private InfoWindow minfoWindow;
@@ -83,8 +104,11 @@ public class MapActivity extends AppCompatActivity {
                 case 500:
                     String getResult = (String)msg.obj;
                     Log.i("ssss",getResult+"");
-                    JsonArray Getja = JSONChange.StringToJsonArrary(getResult);
-                    analysisLocationA(Getja);
+                    if(getResult.indexOf("message")<0){
+                        JsonArray Getja = JSONChange.StringToJsonArrary(getResult);
+                        analysisLocationA(Getja);
+                    }
+
 //                    if (Getjo.get("message")!=null){
 //                        if(Getjo.get("message").equals("用户不在线")){
 //                            if(!lastLocation){
@@ -116,7 +140,9 @@ public class MapActivity extends AppCompatActivity {
     public void onCreate(Bundle b){
         super.onCreate(b);
         setContentView(R.layout.map_activity);
+        //SDKInitializer.initialize(getApplicationContext());
         initView();
+
         addListener();
         initBapMap();
         initLocationOption();
@@ -130,10 +156,37 @@ public class MapActivity extends AppCompatActivity {
     }
     protected void addListener(){
         mLocationClient.registerLocationListener(myListener);
+        bm.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus) {
+               // Log.i("mapstatus", "==-->滚动状态开始");
+            }
+
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus, int i) {
+                Log.i("mapstatus", "==-->滚动状态改变开始");
+                myLocation=false;
+
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus mapStatus) {
+                Log.i("mapstatus", "==-->滚动状态中");
+                myLocation=false;
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus mapStatus) {
+              //  Log.i("mapstatus", "==-->滚动状态结束");
+                myLocation=true;
+            }
+        });
         bm.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 myLocation=false;
+                tolat=marker.getPosition().latitude;
+                tolon=marker.getPosition().longitude;
                 locationArray.get(0).setIsstoplocation(true);
                 Log.i("ClickMarker",marker.getTitle()+
                         "lat"+marker.getPosition().latitude);
@@ -153,6 +206,7 @@ public class MapActivity extends AppCompatActivity {
                 .getString(Constant.UserId,"");
         mMapView = (MapView) findViewById(R.id.bmapView);
         bm =mMapView.getMap();
+        mClusterManager = new ClusterManager<>(this, bm);
         bm.setMyLocationEnabled(true);
         // 初始化点聚合管理类
         mLocationClient = new LocationClient(getApplicationContext());
@@ -170,14 +224,15 @@ public class MapActivity extends AppCompatActivity {
         //bm.setMyLocationEnabled(true);
     }
     protected void sendLocation(float radius,double lon,double lat){
-        MyLocationData locData = new MyLocationData.Builder().accuracy(radius)
-                .direction(100).latitude(lat).longitude(lon).build();
-        if(myLocation){
-            bm.setMyLocationData(locData);
-        }
+
        //给地图设置定位数据，这样地图就显示位置了
 // 开启定位图层
         if(Jundgelat!=lat||Jundgelon!=lon){
+            MyLocationData locData = new MyLocationData.Builder().accuracy(radius)
+                    .direction(100).latitude(lat).longitude(lon).build();
+            if(myLocation){
+                bm.setMyLocationData(locData);
+            }
             Log.i(TAG,"检测位置结果：不一样");
             HashMap<String,String> map = new HashMap<>();
             map.put("userId",getSharedPreferences(Constant.logindata,MODE_PRIVATE
@@ -326,11 +381,18 @@ public class MapActivity extends AppCompatActivity {
         Log.i(TAG,"添加");
         options.add(option);
 
+
+
+
+        items.add(new LocationItem(point));
+
+        //mClusterManager.addItems(items);
        // bm.clear();
       //  bm.addOverlay(options);
     }
     protected void analysisLocationA(JsonArray ja){
         options.clear();
+        items.clear();
         for (int i = 0;i<ja.size();i++){
             JsonObject jo = ja.get(i).getAsJsonObject();
              if(!jo.get("userId").getAsString().equals(userId)){
@@ -354,6 +416,84 @@ public class MapActivity extends AppCompatActivity {
 
         Log.i("clear","clear");
         bm.addOverlays(options);
+        mClusterManager.addItems(items);
+    }
+    protected void iniBDaohanEngine(){
+        try {
+            BikeNavigateHelper.getInstance().initNaviEngine(this, new IBEngineInitListener() {
+                @Override
+                public void engineInitSuccess() {
+                    Log.d(TAG, "BikeNavi engineInitSuccess");
+                    routePlanWithBikeParam();
+                }
+
+                @Override
+                public void engineInitFail() {
+                    Log.d(TAG, "BikeNavi engineInitFail");
+                }
+            });
+        } catch (Exception e) {
+            Log.d(TAG, "startBikeNavi Exception");
+            e.printStackTrace();
+        }
+    }
+    protected void routePlanWithBikeParam(){
+        BikeNavigateHelper.getInstance().routePlanWithParams(bparam, new IBRoutePlanListener() {
+            @Override
+            public void onRoutePlanStart() {
+                Log.d("bdaohan", "BikeNavi onRoutePlanStart");
+            }
+
+            @Override
+            public void onRoutePlanSuccess() {
+                Log.d("bdaohan", "BikeNavi onRoutePlanSuccess");
+                Intent intent = new Intent();
+                intent.setClass(MapActivity.this, BNaviGuideActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRoutePlanFail(BikeRoutePlanError error) {
+                Log.d("bdaohan", "BikeNavi onRoutePlanFail");
+            }
+
+        });
+    }
+    protected void iniDaoHanEngine(){
+        WalkNavigateHelper.getInstance().initNaviEngine(MapActivity.this, new IWEngineInitListener() {
+            @Override
+            public void engineInitSuccess() {
+                Log.d("ENGINE", "引擎初始化成功");
+                routePlanWithParam();
+            }
+
+            @Override
+            public void engineInitFail() {
+                Log.d("ENGINE", "引擎初始化失败");
+            }
+        });
+    }
+    public void routePlanWithParam() {
+        WalkNavigateHelper.getInstance().routePlanWithParams(param, new IWRoutePlanListener() {
+            @Override
+            public void onRoutePlanStart() {
+                Log.d("ENGINE", "开始算路");
+            }
+
+            @Override
+            public void onRoutePlanSuccess() {
+                Log.d("ENGINE", "算路成功,跳转至诱导页面");
+                Intent intent = new Intent();
+                intent.setClass(MapActivity.this, WNaviGuideActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRoutePlanFail(WalkRoutePlanError error) {
+                Log.d("ENGINE", "算路失败");
+            }
+
+        });
     }
     public void onStart() {
         super.onStart();
@@ -364,10 +504,20 @@ public class MapActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN) //在ui线程执行
     public void onDataSynEvent(MapEvent event) {
-        if (event.isClose()){
+        if (event.isClose().equals("close")){
             bm.hideInfoWindow();
             myLocation=true;
             locationArray.get(0).setIsstoplocation(false);
+        }else if(event.isClose().equals("daohan")){
+            LatLng  startPt = new LatLng(Jundgelat,Jundgelon);
+            LatLng  endPt = new LatLng(tolat, tolon);
+            param = new WalkNaviLaunchParam().stPt(startPt).endPt(endPt);
+            iniDaoHanEngine();
+        }else if (event.isClose().equals("qxdaohan")){
+            LatLng  startPt = new LatLng(Jundgelat,Jundgelon);
+            LatLng  endPt = new LatLng(tolat, tolon);
+            bparam = new BikeNaviLaunchParam().stPt(startPt).endPt(endPt);
+            iniBDaohanEngine();
         }
     }
 }

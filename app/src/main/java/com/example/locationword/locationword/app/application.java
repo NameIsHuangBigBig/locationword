@@ -9,6 +9,8 @@ import android.util.Log;
 
 
 import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.walknavi.WalkNavigateHelper;
+import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
 import com.example.locationword.locationword.http.API;
 import com.example.locationword.locationword.http.HttpUtil;
 import com.example.locationword.locationword.tool.Constant;

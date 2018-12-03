@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,6 +69,7 @@ public class GroupManImage extends LinearLayout implements View.OnClickListener{
         llBg.setBackgroundColor(Color.WHITE);
     }
     public void setImagerView(String avatrl){
+        Log.i("image",avatrl);
         Glide.with(context).load(avatrl).placeholder(R.drawable.groupmanager_icon_one).into(ivHead);
     }
     public void setTvNickname(String s){

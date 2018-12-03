@@ -1,6 +1,7 @@
 package com.example.locationword.locationword;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
@@ -9,9 +10,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +29,7 @@ import com.example.locationword.locationword.Adapter.FragmentAdapter;
 import com.example.locationword.locationword.Fragment.GroupFragment;
 import com.example.locationword.locationword.Fragment.MeFragment;
 import com.example.locationword.locationword.Fragment.MessageFragment;
+import com.example.locationword.locationword.app.AppManager;
 import com.example.locationword.locationword.event.GroupUpdateEvent;
 import com.example.locationword.locationword.event.LocationEvent;
 import com.example.locationword.locationword.event.MessageEvent;
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        AppManager.getAppManager().addActivity(this);
         initView();
         addListener();
         addCallReceive();
@@ -214,5 +219,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void LoginOutLocation(){
         HttpUtil.getInstence().doGet(API.changeLocationState+"?userId="+getSharedPreferences(Constant.logindata,MODE_PRIVATE
         ).getString(Constant.UserId,"")+"&isOnline=0",handler);
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            new AlertDialog.Builder(context)
+                    .setTitle("确定退出程序")
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.this.finish();
+                        }
+                    })
+                    .create().show();
+            return false;
+        }else {
+            return super.onKeyDown(keyCode, event);
+        }
+
     }
 }
