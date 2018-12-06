@@ -4,8 +4,11 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.locationword.locationword.event.MessageEvent;
+import com.example.locationword.locationword.tool.JSONChange;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -53,6 +56,37 @@ public class HttpUtil {
                 Message m= new Message();
                 m.what=1000;
                 m.obj=s;
+                hcb.handleMessage(m);
+            }
+        });
+    }
+    public void doGet(String url,final Handler hcb,final TextView v){
+
+        OkHttpClient okHttpClient=new OkHttpClient();
+        Request request=new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        Call call=okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                hcb.sendEmptyMessage(1001);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String s=new String(response.body().bytes());
+                Message m= new Message();
+                m.what=1000;
+                m.obj=s;
+                hcb.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        v.setText(JSONChange.StringToJsonObject(s).get("NickName").getAsString());
+                    }
+                });
+
                 hcb.handleMessage(m);
             }
         });

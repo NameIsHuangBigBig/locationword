@@ -1,9 +1,11 @@
 package com.example.locationword.locationword;
 
+import android.app.Notification;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 //
@@ -54,6 +57,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import cn.jpush.android.api.BasicPushNotificationBuilder;
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,ViewPager.OnPageChangeListener{
     private BottomNavigationView bottomNavigationView;
@@ -67,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Context context = MainActivity.this;
     private String userId;
     private BDLocation bdl;
+    private SharedPreferences s;
+    private ImageView ivSearch;
     private Handler handler=new Handler(){
         public void handleMessage(Message msg){
             switch (msg.what){
@@ -83,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     });
                     break;
+                case 50:
+                    setJPush();
+                    break;
             }
         }
     };
@@ -95,11 +108,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addListener();
         addCallReceive();
         bdl=new BDLocation(getApplicationContext());//直接一次定位
+        setJPush();
     }
     public void initView(){
+        s = getSharedPreferences(Constant.logindata,MODE_PRIVATE);
         userId = getSharedPreferences(Constant.logindata,MODE_PRIVATE
         ).getString(Constant.UserId,"");
         tv_add=findViewById(R.id.tv_add);
+        ivSearch = (ImageView) findViewById(R.id.iv_search);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigationView);
         //  BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         viewPager = (ViewPager) findViewById(R.id.vp);
@@ -115,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tv_add.setOnClickListener(this);
         bottomNavigationView.setOnNavigationItemSelectedListener(new MyBottomBarListenr());
         viewPager.addOnPageChangeListener(this);
+        ivSearch.setOnClickListener(this);
     }
 
     @Override
@@ -122,6 +139,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.tv_add:
                 SkipUtils.skipActivity(MainActivity.this,AddGroupActivity.class);
+                break;
+            case R.id.iv_search:
+                SkipUtils.skipActivity(MainActivity.this,SearchGroupActivity.class);
                 break;
         }
     }
@@ -243,5 +263,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return super.onKeyDown(keyCode, event);
         }
 
+    }
+
+    private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
+        @Override
+        public void gotResult(int code, String alias, Set<String> tags) {
+            String logs ;
+            switch (code) {
+                case 0:
+                    logs = "Set tag and alias success";
+                    Log.i(TAG, logs);
+                    // 建议这里往 SharePreference 里写一个成功设置的状态。成功设置一次后，以后不必再次设置了。
+                    break;
+                case 6002:
+                    logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
+                    Log.i(TAG, logs);
+                    // 延迟 60 秒来调用 Handler 设置别名
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ShowUtil.showText(context,"推送服务繁忙，正在重新连接");
+                        }
+                    });
+                    handler.sendEmptyMessageDelayed(50,1000*60);
+                    break;
+                default:
+                    logs = "Failed with errorCode = " + code;
+                    Log.e(TAG, logs);
+            }
+          //  ExampleUtil.showToast(logs, getApplicationContext());
+        }
+    };
+
+
+    protected void setJPush(){
+        JPushInterface.setAliasAndTags(getApplicationContext(),
+                userId,
+                null,
+                mAliasCallback);
+        BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(MainActivity.this);
+        builder.statusBarDrawable = R.mipmap.location_logo;
+        builder.notificationFlags =  Notification.FLAG_SHOW_LIGHTS;  //设置为自动消失和呼吸灯闪烁
+        builder.notificationDefaults = Notification.DEFAULT_SOUND
+                | Notification.DEFAULT_VIBRATE
+                | Notification.DEFAULT_LIGHTS;  // 设置为铃声、震动、呼吸灯闪烁都要
+        JPushInterface.setPushNotificationBuilder(1, builder);
     }
 }

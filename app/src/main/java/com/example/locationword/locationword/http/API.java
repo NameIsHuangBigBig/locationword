@@ -31,6 +31,10 @@ public class API {
     public static final String getUserLocationA = BASEURL+"/Location/getUserLocationA";
     //改变用户定位状态
     public static final String changeLocationState = BASEURL+"/Location/changeLocationState";
+    //获取昵称或者头像
+    public static final  String getUserDetail = BASEURL+"/User/getUserDetail";
+    //申请加人群
+    public static final String addGroupPush = BASEURL+"/JPush/addGroupPush";
 
 }
 

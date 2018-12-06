@@ -27,6 +27,8 @@ import java.util.List;
 
 import java.util.logging.LogRecord;
 
+import cn.jpush.android.api.JPushInterface;
+
 import static com.hyphenate.easeui.utils.EaseUserUtils.getUserInfo;
 
 public class application extends Application {
@@ -39,7 +41,12 @@ public class application extends Application {
         EaseClientInit();
         UMengInit();
         BaiduInit();
+        JPushInit();
         MobSDK.init(this);
+    }
+    protected void JPushInit(){
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
     }
     public void BaiduInit(){
         SDKInitializer.initialize(this);

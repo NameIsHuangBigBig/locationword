@@ -21,7 +21,6 @@ import com.hyphenate.chat.EMClient;
 
 public class SetActivity extends AppCompatActivity implements View.OnClickListener,CompoundButton.OnCheckedChangeListener {
     private ImageView back;
-    private Switch sLocation;
     private Switch sTuis;
     private Switch sLogin;
     private RelativeLayout rlChangePhone;
@@ -38,13 +37,13 @@ public class SetActivity extends AppCompatActivity implements View.OnClickListen
         back.setOnClickListener(this);
         rlChangePhone.setOnClickListener(this);
         btnTuic.setOnClickListener(this);
-        sLocation.setOnCheckedChangeListener(this);
+//        sLocation.setOnCheckedChangeListener(this);
         sTuis.setOnCheckedChangeListener(this);
         sLogin.setOnCheckedChangeListener(this);
     }
     public void initView(){
         back = (ImageView) findViewById(R.id.back);
-        sLocation = (Switch) findViewById(R.id.s_location);
+
         sTuis = (Switch) findViewById(R.id.s_tuis);
         sLogin = (Switch) findViewById(R.id.s_login);
         rlChangePhone = (RelativeLayout) findViewById(R.id.rl_changePhone);
@@ -55,11 +54,7 @@ public class SetActivity extends AppCompatActivity implements View.OnClickListen
         }else{
             sLogin.setChecked(false);
         }
-        if (s.getBoolean(Constant.getLocation,true)){
-            sLocation.setChecked(true);
-        }else{
-            sLocation.setChecked(false);
-        }
+
         if (s.getBoolean(Constant.autoTuis,true)){
             sTuis.setChecked(true);
         }else{
@@ -97,14 +92,6 @@ public class SetActivity extends AppCompatActivity implements View.OnClickListen
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         ShowUtil.showText(SetActivity.this,"设置成功！");
         switch (compoundButton.getId()){
-
-            case R.id.s_location:
-                if (b){
-                   s.edit().putBoolean(Constant.getLocation,true).commit();
-                }else{
-                    s.edit().putBoolean(Constant.getLocation,false).commit();
-                }
-                break;
             case R.id.s_tuis:
                 if (b){
                     s.edit().putBoolean(Constant.autoTuis,true).commit();

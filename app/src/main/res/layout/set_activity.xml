@@ -34,28 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <RelativeLayout
-            android:gravity="center_vertical"
-            android:layout_width="match_parent"
-            android:layout_height="40dp">
-        <TextView
-            android:textSize="16dp"
-            android:textColor="#000"
-            android:text="位置信息"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Switch
-            android:id="@+id/s_location"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="right"
-            android:checked="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        </RelativeLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#ccc"/>
+
         <RelativeLayout
             android:gravity="center_vertical"
             android:layout_width="match_parent"
