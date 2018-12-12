@@ -42,4 +42,5 @@ dependencies {
     api files('libs/okio-1.12.0.jar')
     api files('libs/gson-2.2.4.jar')
     api files('libs/BaiduLBS_Android.jar')
+    api 'com.liaoinstan.springview:library:1.3.2'
 }

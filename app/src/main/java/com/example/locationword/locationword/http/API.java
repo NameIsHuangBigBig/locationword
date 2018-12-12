@@ -8,7 +8,7 @@ public class API {
     /**
      * 基本路径
      */
-    public static final String BASEURL = "http://172.17.144.57:8082/locationword";
+    public static final String BASEURL = "http://172.17.146.156:8082/locationword";
     //检查登录
     public static final String checkLogin = BASEURL+"/Login/checklogin";
     //注册用户
@@ -35,6 +35,8 @@ public class API {
     public static final  String getUserDetail = BASEURL+"/User/getUserDetail";
     //申请加人群
     public static final String addGroupPush = BASEURL+"/JPush/addGroupPush";
+    //多用推送
+    public static final String userJPush = BASEURL+"/JPush/userJPush";
 
 }
 

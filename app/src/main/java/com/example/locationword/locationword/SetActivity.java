@@ -19,6 +19,8 @@ import com.example.locationword.locationword.tool.ShowUtil;
 import com.example.locationword.locationword.tool.SkipUtils;
 import com.hyphenate.chat.EMClient;
 
+import cn.jpush.android.api.JPushInterface;
+
 public class SetActivity extends AppCompatActivity implements View.OnClickListener,CompoundButton.OnCheckedChangeListener {
     private ImageView back;
     private Switch sTuis;

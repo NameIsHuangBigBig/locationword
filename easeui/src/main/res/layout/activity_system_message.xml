@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SystemMessageActivity">
+    android:layout_height="match_parent">
     <RelativeLayout
         android:id="@+id/layout_top"
         android:layout_width="match_parent"
@@ -17,7 +14,7 @@
             android:layout_width="30dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@mipmap/returnlogo"
+            android:src="@drawable/returnlogo"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"/>
 
@@ -25,17 +22,22 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="系 统 消 息"
+            android:gravity="center_vertical"
+            android:text="系统消息"
             android:textColor="#FFFFFF"
-            android:textSize="25dp"
-            android:layout_centerInParent="true"/>
+            android:textSize="18dp"
+            android:layout_toRightOf="@+id/img_gruop_return"/>
     </RelativeLayout>
-
+    <com.liaoinstan.springview.widget.SpringView
+        android:id="@+id/springview"
+        android:layout_below="@+id/layout_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <ListView
         android:id="@+id/lv_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/layout_top"></ListView>
+       ></ListView>
+    </com.liaoinstan.springview.widget.SpringView>
 
 </RelativeLayout>

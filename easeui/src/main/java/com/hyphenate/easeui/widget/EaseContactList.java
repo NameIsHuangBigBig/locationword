@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -18,6 +20,7 @@ import com.hyphenate.chat.EMGroup;
 import com.hyphenate.easeui.R;
 import com.hyphenate.easeui.adapter.EaseContactAdapter;
 import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.ui.SystemMessageActivity;
 
 public class EaseContactList extends RelativeLayout {
     protected static final String TAG = EaseContactList.class.getSimpleName();
@@ -33,7 +36,10 @@ public class EaseContactList extends RelativeLayout {
     protected int primarySize;
     protected boolean showSiderBar;
     protected Drawable initialLetterBg;
-    
+    protected LinearLayout tvSystemMessage;
+
+
+
     static final int MSG_UPDATE_LIST = 0;
     
     Handler handler = new Handler() {
@@ -89,11 +95,20 @@ public class EaseContactList extends RelativeLayout {
         initialLetterBg = ta.getDrawable(R.styleable.EaseContactList_ctsListInitialLetterBg);
         initialLetterColor = ta.getColor(R.styleable.EaseContactList_ctsListInitialLetterColor, 0);
         ta.recycle();
-        
-        
+
+
         LayoutInflater.from(context).inflate(R.layout.ease_widget_contact_list, this);
         listView = (ListView)findViewById(R.id.list);
         sidebar = (EaseSidebar) findViewById(R.id.sidebar);
+        tvSystemMessage = (LinearLayout) findViewById(R.id.tv_system_message);
+        tvSystemMessage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i =new Intent(getContext(),SystemMessageActivity.class);
+                getContext().startActivity(i);
+            }
+        });
+
         if(!showSiderBar)
             sidebar.setVisibility(View.GONE);
     }

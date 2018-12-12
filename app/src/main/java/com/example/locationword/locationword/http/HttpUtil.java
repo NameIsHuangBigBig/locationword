@@ -12,14 +12,18 @@ import com.example.locationword.locationword.tool.JSONChange;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class HttpUtil {
@@ -175,4 +179,75 @@ public class HttpUtil {
             }
         });
     }
+    public void doPostMutliFile(String url, Map<String,Object> map, final Handler hand){
+
+        MultipartBody.Builder params=new MultipartBody.Builder();
+        for(String key: map.keySet()){
+            if (map.get(key) instanceof  String){
+                params.addFormDataPart(key,(String)map.get(key));
+            }else{
+                params.addFormDataPart(key,((File)map.get(key)).getName(),
+                        RequestBody.create( MediaType.parse("image/png"),(File)map.get(key)));
+            }
+        }
+        OkHttpClient okHttpClient=new OkHttpClient();
+        Request request=new Request.Builder()
+                .url(url)
+                .post(params.build())
+                .build();
+        Call call=okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                hand.sendEmptyMessage(1001);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String s=new String(response.body().bytes());
+                Message m= new Message();
+                Log.i("Multopar","1000");
+
+                m.what=1000;
+                m.obj=s;
+                hand.handleMessage(m);
+            }
+        });
+    }
+    public void doPostMutliFile(String url, Map<String,Object> map, final Handler hand,final int i ){
+
+        MultipartBody.Builder params=new MultipartBody.Builder();
+        for(String key: map.keySet()){
+            if (map.get(key) instanceof  String){
+                params.addFormDataPart(key,(String)map.get(key));
+            }else{
+                params.addFormDataPart(key,((File)map.get(key)).getName(),
+                        RequestBody.create( MediaType.parse("image/png"),(File)map.get(key)));
+            }
+        }
+        OkHttpClient okHttpClient=new OkHttpClient();
+        Request request=new Request.Builder()
+                .url(url)
+                .post(params.build())
+                .build();
+        Call call=okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                hand.sendEmptyMessage(1001);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String s=new String(response.body().bytes());
+                Message m= new Message();
+                Log.i("Multopar","1000");
+
+                m.what=i;
+                m.obj=s;
+                hand.handleMessage(m);
+            }
+        });
+    }
+
 }

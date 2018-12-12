@@ -40,6 +40,8 @@ public class DeleteGroupManActivity extends AppCompatActivity implements View.On
     private TextView tvFinish;
     private ListView lvMain;
     private String GroupId;
+    private String GroupName;
+    private String userId;
     private String nowOwner;
     private String InGroupMan;
     private String newOwnerId;
@@ -66,6 +68,11 @@ public class DeleteGroupManActivity extends AppCompatActivity implements View.On
                         }
                     });
                     break;
+                case 500:
+                    String resultts = (String)msg.obj;
+                    Log.i("tuis","返回结果："+resultts);
+
+                    break;
             }
         }
     };
@@ -82,6 +89,8 @@ public class DeleteGroupManActivity extends AppCompatActivity implements View.On
         HttpUtil.getInstence().doPost(API.getGroupUser,m,handler);
     }
     public void initView(){
+        GroupName = getIntent().getStringExtra("GroupName");
+        userId = getIntent().getStringExtra("userId");
         loadingDialog = new LoadingDialog(context,"移除中...");
         back = (ImageView) findViewById(R.id.back);
         tvFinish = (TextView) findViewById(R.id.tv_finish);
@@ -118,17 +127,33 @@ public class DeleteGroupManActivity extends AppCompatActivity implements View.On
         new Thread(new Runnable() {
             @Override
             public void run() {
+                final StringBuffer deleteAr = new StringBuffer();
                 try {
+
+                    deleteAr.append("[");
                     Log.i(TAG,GroupId+"/delete/"+newOwnerId);
                     for (int i =0;i<DeleteMan.size();i++){
+                        if (i!=(DeleteMan.size()-1)){
+                            deleteAr.append(DeleteMan.get(i)+",");
+                        }else{
+                            deleteAr.append(DeleteMan);
+                        }
                         EMClient.getInstance().groupManager().removeUserFromGroup(GroupId, DeleteMan.get(i));//需异步处理
                     }
+                    deleteAr.append("]");
                      } catch (HyphenateException e) {
                     e.printStackTrace();
                 }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.i("deleteAr",deleteAr.toString());
+                        HashMap<String,String> map = new HashMap<>();
+                        map.put("userId",userId);
+                        map.put("receiverIdArray",deleteAr.toString());
+                        map.put("GroupName",GroupName);
+                        map.put("type","2");
+                        HttpUtil.getInstence().doPost(API.userJPush,map,handler,500);
                         EventBus.getDefault().post(new GroupManagerEvent("changeman",""));
                         DeleteGroupManActivity.this.finish();
                         ShowUtil.showText(context,"移除成功!");

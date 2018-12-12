@@ -48,7 +48,20 @@
         <!-- 声明sdk所需的service SDK核心功能-->
         <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote">
         </service>
-
+        <receiver
+            android:name="com.example.locationword.locationword.Receiver.JPushReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION" />
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_CLICK_ACTION" />
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
+                <category android:name="com.example.locationword.locationword" />
+            </intent-filter>
+        </receiver>
         <service android:name="cn.jpush.android.service.PushService"
             android:process=":multiprocess"
             tools:node="replace" ></service>
@@ -102,6 +115,7 @@
         <activity android:name=".SetActivity"></activity>
         <activity android:name=".GroupDetailActivity"></activity>
         <activity android:name=".SearchGroupActivity"></activity>
+        <activity android:name="com.hyphenate.easeui.ui.SystemMessageActivity"></activity>
         <activity android:name="com.hyphenate.easeui.ui.VideoCallActivity"></activity>
         <activity android:name="com.hyphenate.easeui.ui.VoiceCallActivity"></activity>
         <activity android:name="com.hyphenate.easeui.ui.EaseShowBigImageActivity"></activity>

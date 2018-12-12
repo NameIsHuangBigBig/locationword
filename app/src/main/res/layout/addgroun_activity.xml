@@ -60,7 +60,7 @@
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="群描述"/>
+        android:text="群人数"/>
     <EditText
         android:id="@+id/et_num"
         android:hint="请输入10-999的数字"

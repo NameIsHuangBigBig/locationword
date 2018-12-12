@@ -32,6 +32,7 @@ import com.example.locationword.locationword.Adapter.FragmentAdapter;
 import com.example.locationword.locationword.Fragment.GroupFragment;
 import com.example.locationword.locationword.Fragment.MeFragment;
 import com.example.locationword.locationword.Fragment.MessageFragment;
+import com.example.locationword.locationword.Receiver.JPushReceiver;
 import com.example.locationword.locationword.app.AppManager;
 import com.example.locationword.locationword.event.GroupUpdateEvent;
 import com.example.locationword.locationword.event.LocationEvent;
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         addListener();
         addCallReceive();
+        addJpushReceive();
         bdl=new BDLocation(getApplicationContext());//直接一次定位
         setJPush();
     }
@@ -200,7 +202,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return false;
         }
     }
-
+    protected void addJpushReceive(){
+        JPushReceiver jpr = new JPushReceiver();
+        // String id=JPushInterface.getRegistrationID(this);
+        IntentFilter callFilter = new IntentFilter("cn.jpush.android.intent.REGISTRATION");
+        registerReceiver(jpr, callFilter);
+    }
     private void addCallReceive(){
         callReceiver=new CallReceiver();
        // String id=JPushInterface.getRegistrationID(this);

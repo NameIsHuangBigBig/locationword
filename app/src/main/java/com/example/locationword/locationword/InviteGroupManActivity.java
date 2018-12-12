@@ -35,6 +35,7 @@ import com.liaoinstan.springview.widget.SpringView;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class InviteGroupManActivity extends AppCompatActivity implements View.OnClickListener,SearchView.OnQueryTextListener{
@@ -194,13 +195,24 @@ public class InviteGroupManActivity extends AppCompatActivity implements View.On
     }
     private void getGroupMan(String s[]) throws HyphenateException {
         EMGroup group = null;
+        final StringBuffer sb= new StringBuffer();
 
+        sb.append("[");
+        for(int i =0;i<s.length;i++){
+            if (i!=(s.length-1)){
+                sb.append(s[i]+",");
+            }else{
+                sb.append(s[i]+"]");
+            }
+        }
         try {
             group = EMClient.getInstance().groupManager().getGroupFromServer(GroupId);
         } catch (HyphenateException e) {
             e.printStackTrace();
         }
-        String UserId = getSharedPreferences(Constant.logindata,MODE_PRIVATE).getString(Constant.UserId,"");
+        final String GroupName = group.getGroupName();
+        final String UserName = getIntent().getStringExtra("userName");
+        final String UserId = getSharedPreferences(Constant.logindata,MODE_PRIVATE).getString(Constant.UserId,"");
         if(UserId.equals(group.getOwner())){
             EMClient.getInstance().groupManager().addUsersToGroup(GroupId,s);//需异步处理
         }else{
@@ -213,6 +225,13 @@ public class InviteGroupManActivity extends AppCompatActivity implements View.On
                 InviteGroupManActivity.this.finish();
                 EventBus.getDefault().post(new GroupManagerEvent("inviteman","update"));
                 ShowUtil.showText(context,"邀请成功");
+                HashMap<String,String> map = new HashMap<>();
+                map.put("userId",UserId);
+                map.put("receiverIdArray",sb.toString());
+                map.put("GroupName",GroupName);
+                map.put("userName",UserName);
+                map.put("type","4");
+                HttpUtil.getInstence().doPost(API.userJPush,map,handler,600);
             }
         });
 

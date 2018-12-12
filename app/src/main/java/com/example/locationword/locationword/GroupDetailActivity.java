@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,10 +22,13 @@ import com.example.locationword.locationword.tool.ShowUtil;
 import com.example.locationword.locationword.tool.SkipUtils;
 import com.google.gson.JsonObject;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMCursorResult;
 import com.hyphenate.chat.EMGroup;
 import com.hyphenate.exceptions.HyphenateException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class GroupDetailActivity extends AppCompatActivity implements View.OnClickListener{
     private ImageView back;
@@ -71,6 +75,7 @@ public class GroupDetailActivity extends AppCompatActivity implements View.OnCli
                     this.post(new Runnable() {
                         @Override
                         public void run() {
+                            loadingDialog.close();
                             ShowUtil.showText(GroupDetailActivity.this,"网络异常！");
                         }
                     });
@@ -99,9 +104,10 @@ public class GroupDetailActivity extends AppCompatActivity implements View.OnCli
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                loadingDialog.close();
                                // btnRequest.setText("等待对方同意");
                                // btnRequest.setClickable(false);
-                                ShowUtil.showText(GroupDetailActivity.this,"推送服务出错！");
+                                ShowUtil.showText(GroupDetailActivity.this,"该用户app版本较低，无法初始化推送服务！");
                             }
                         });
                     }
@@ -115,6 +121,42 @@ public class GroupDetailActivity extends AppCompatActivity implements View.OnCli
         initView();
         addListenr();
         requestData();
+
+    }
+    protected  void requestManPeople () {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<String> memberList = new ArrayList<>();
+                EMCursorResult<String> result = null;
+                final int pageSize = 999;
+                do {
+                    try {
+                        result = EMClient.getInstance().groupManager().fetchGroupMembers(GroupId,
+                                result != null ? result.getCursor() : "", pageSize);
+                    } catch (HyphenateException e) {
+                        e.printStackTrace();
+                        break;
+                    }
+                    if (result!=null){
+                        memberList.addAll(result.getData());
+                    }
+                } while (!TextUtils.isEmpty(result.getCursor()) && result.getData().size() == pageSize);
+                for (int i =0; i<memberList.size();i++){
+                    if (userId.equals(memberList.get(i))){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnRequest.setText("您已加入此群");
+                                btnRequest.setClickable(false);
+                            }
+                        });
+                        break;
+                    }
+                }
+            }
+        }).start();
+
     }
     protected void initView(){
         loadingDialog = new LoadingDialog(GroupDetailActivity.this,"请求中...");
@@ -163,37 +205,12 @@ public class GroupDetailActivity extends AppCompatActivity implements View.OnCli
                break;
             case R.id.ll_man:
                 HashMap<String,Object> m1 = new HashMap<>();
-                m1.put("UserId",userId);
+                m1.put("UserId",manId);
                 SkipUtils.skipActivityWithParameter(GroupDetailActivity.this,GroupManDetailActivity.class,m1);
                 break;
         }
     }
-    protected void addGroup() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    EMClient.getInstance().groupManager().joinGroup(groupId);//需异步处理
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadingDialog.close();
-                        }
-                    });
-                   // loadingDialog.close();
-                } catch (HyphenateException e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadingDialog.close();
-                        }
-                    });
-                    e.printStackTrace();
-                }
-            }
-        }).start();
 
-    }
     protected void requestData(){
         HttpUtil.getInstence().doGet(API.getUserDetail+"?userId="+userId,handler,500);
         //根据群组ID从服务器获取群组基本信息
@@ -215,7 +232,12 @@ public class GroupDetailActivity extends AppCompatActivity implements View.OnCli
                                 HttpUtil.getInstence().doGet(API.getUserDetail+"?userId="+id,handler);
                                 GroupName=group.getGroupName();
                                 GroupId=group.getGroupId();
+                                requestManPeople();
                                 manId = id;
+                                if(manId.equals(userId)){
+                                    btnRequest.setClickable(false);
+                                    btnRequest.setText("您已加入此群！");
+                                }
                                 tvName .setText(group.getGroupName());
                                 tvNum.setText(group.getGroupId());
                                 tvDistribute.setText(group.getDescription());

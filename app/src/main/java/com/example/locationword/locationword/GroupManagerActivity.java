@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.locationword.locationword.bean.User;
 import com.example.locationword.locationword.event.GroupManagerEvent;
 import com.example.locationword.locationword.event.GroupUpdateEvent;
 import com.example.locationword.locationword.event.MessageUpdateEvent;
@@ -63,6 +64,9 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
     private TextView tvTs;
     private String OwnerId;
     private String UserId;
+    private String GroupName;
+    private String UserName;
+    private StringBuffer groupManNome;
     private Handler handler=new Handler(){
         public void handleMessage(Message msg){
             switch (msg.what){
@@ -142,14 +146,18 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
             memberList.addAll(result.getData());
         } while (!TextUtils.isEmpty(result.getCursor()) && result.getData().size() == pageSize);
         getGroupBoss();
+        groupManNome=new StringBuffer();
         userIdArray=new StringBuffer();
         userIdArray.append("[");
+        groupManNome.append("[");
         for (int i=0;i<memberList.size();i++){
 
             if(i==memberList.size()-1){
+                groupManNome.append(memberList.get(i)+"]");
                 userIdArray.append(memberList.get(i)+"]");
             }else{
                 userIdArray.append(memberList.get(i)+",");
+                groupManNome.append(memberList.get(i)+",");
             }
 
             Log.i("group","list"+memberList.get(i));
@@ -179,6 +187,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         tvGroupname = (TextView) findViewById(R.id.tv_groupname);
         EMGroup group = EMClient.getInstance().groupManager().getGroup(GroupId);
         if (group != null){
+            GroupName=group.getGroupName();
             tvGroupname.setText(group.getGroupName());
         }
         tvTs = (TextView) findViewById(R.id.tv_ts);
@@ -216,6 +225,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                     HashMap<String,Object>map=new HashMap<>();
                     map.put("GroupId",GroupId);
                     map.put("InGroupMan",userIdArray.toString());
+                    map.put("userName",UserName);
                     SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,InviteGroupManActivity.class,map);
                 }else{
                     ShowUtil.showText(GroupManagerActivity.this,"只有会长可以使用此功能！");
@@ -244,6 +254,9 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                     HashMap<String,Object>mapzr=new HashMap<>();
                     mapzr.put("GroupId",GroupId);
                     mapzr.put("nowOwner",OwnerId);
+                    mapzr.put("userId",getSharedPreferences(Constant.logindata,MODE_PRIVATE)
+                    .getString(Constant.UserId,""));
+                    mapzr.put("GroupName",GroupName);
                     mapzr.put("InGroupMan",userIdArray.toString());
                     SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,DeleteGroupManActivity.class,mapzr);
                 }else{
@@ -262,7 +275,14 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                                             @Override
                                             public void run() {
                                                 try {
-                                                EMClient.getInstance().groupManager().destroyGroup(GroupId);//需异步处理步处理
+                                                    HashMap<String,String> map = new HashMap<>();
+                                                    map.put("userId",UserId);
+                                                    map.put("receiverIdArray",groupManNome.toString());
+                                                    map.put("GroupName",GroupName);
+                                                    map.put("type","2");
+                                                    HttpUtil.getInstence().doPost(API.userJPush,map,handler,500);
+
+                                                    EMClient.getInstance().groupManager().destroyGroup(GroupId);//需异步处理步处理
                                                     EventBus.getDefault().post(new MessageUpdateEvent(true));
                                                     EventBus.getDefault().post(new GroupUpdateEvent(true));
 
@@ -299,6 +319,15 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                                                     runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
+                                                            HashMap<String,String> map = new HashMap<>();
+                                                            map.put("userId",UserId);
+                                                            String c="["+OwnerId+"]";
+                                                            map.put("receiverIdArray",c);
+                                                            map.put("GroupName",GroupName);
+                                                            map.put("userName",UserName);
+                                                            map.put("type","3");
+                                                            HttpUtil.getInstence().doPost(API.userJPush,map,handler,500);
+
                                                             GroupManagerActivity.this.finish();
                                                         }
                                                     });
@@ -320,6 +349,9 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
     protected  void addImageView(JsonArray ja){
         loading.setVisibility(View.GONE);
         for(int i=0;i<ja.size();i++){
+            if (ja.get(i).getAsJsonObject().get("UserId").getAsString().equals(UserId)){
+                UserName = ja.get(i).getAsJsonObject().get("NickName").getAsString();
+            }
             GroupManImage gmi = new GroupManImage(GroupManagerActivity.this);
             gmi.setIndex(Integer.parseInt(ja.get(i).getAsJsonObject().get("UserId").getAsString()));
             gmi.setClickListener(new GroupManImage.ClickListener() {

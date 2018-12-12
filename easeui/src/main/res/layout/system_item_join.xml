@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/system_item_head"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="10dp"
+         />
+    <LinearLayout
+        android:id="@+id/ll_message"
+        android:layout_toRightOf="@+id/system_item_head"
+        android:layout_marginTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+            <TextView
+                android:id="@+id/system_tv_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="某某某申请加入群2333"
+                android:gravity="center_vertical"
+                android:textSize="15dp"/>
+    </LinearLayout>
+    <LinearLayout
+
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/ll_message"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已同意"/>
+        <Button
+            android:id="@+id/btn_agree"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="同意"
+            android:textColor="#fff"
+            android:background="@drawable/button_persondetail"/>
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="取消"
+            android:layout_marginLeft="15dp"
+            android:textColor="#fff"
+            android:background="@drawable/button_cancel"/>
+    </LinearLayout>
+</RelativeLayout>
+
