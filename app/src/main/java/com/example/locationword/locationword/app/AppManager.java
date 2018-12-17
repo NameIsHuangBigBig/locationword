@@ -1,9 +1,15 @@
 package com.example.locationword.locationword.app;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -48,6 +54,12 @@ public class AppManager {
             activityStack=new Stack<AppCompatActivity>();
         }
         activityStack.add(activity);
+    }
+    public void removeActivity(AppCompatActivity activity){
+        if(activityStack==null){
+            activityStack=new Stack<AppCompatActivity>();
+        }
+        activityStack.remove(activity);
     }
     /**
      * 获取当前Activity（堆栈中最后一个压入的）
@@ -141,5 +153,24 @@ public class AppManager {
             System.exit(0);
         } catch (Exception e) {	}
     }
+    public static void requestRuntimePermissions(
+            String[] permissions, Context context) {
+
+        List<String> permissionList = new ArrayList<>();
+        // 遍历每一个申请的权限，把没有通过的权限放在集合中
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(context, permission) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(permission);
+            }
+        }
+        // 申请权限
+        if (!permissionList.isEmpty()) {
+            ActivityCompat.requestPermissions((Activity) context,
+                    permissionList.toArray(new String[permissionList.size()]), 1);
+        }
+    }
+
+
 }
 

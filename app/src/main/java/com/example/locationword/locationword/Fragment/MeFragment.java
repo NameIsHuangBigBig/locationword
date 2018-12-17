@@ -7,11 +7,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.FileUriExposedException;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -189,6 +192,7 @@ public class MeFragment extends Fragment implements View.OnClickListener {
 
 
     //监听事件处理
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -265,6 +269,7 @@ public class MeFragment extends Fragment implements View.OnClickListener {
     }
 
     // 启动手机相机拍摄照片作为头像
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void choseHeadImageFromCameraCapture() {
         Intent intentFromCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
@@ -274,7 +279,12 @@ public class MeFragment extends Fragment implements View.OnClickListener {
                         .fromFile(new File(Environment
                                 .getExternalStorageDirectory(), IMAGE_FILE_NAME)));
             }
+            try{
             startActivityForResult(intentFromCapture, CODE_CAMERA_REQUEST);
+        }catch (FileUriExposedException e){
+            Toast.makeText(getContext(),"相机异常！",Toast.LENGTH_SHORT).show();
+        }
+
         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("Receiver not registered")) {
                 // Ignore this exception. This is exactly what is desired
@@ -498,7 +508,12 @@ public class MeFragment extends Fragment implements View.OnClickListener {
         //本地相册选择
         if (requestCode == CODE_GALLERY_REQUEST) {
             //如果是来自本地的
-            cropRawPhoto(data.getData());//直接裁剪图片
+            try {
+                cropRawPhoto(data.getData());//直接裁剪图片
+            }catch (SecurityException e){
+                ShowUtil.showText(getContext(),"截图异常！");
+            }
+
         }
 
         if (requestCode == CODE_RESULT_REQUEST){

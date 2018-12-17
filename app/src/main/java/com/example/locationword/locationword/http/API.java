@@ -49,7 +49,8 @@ public class API {
     public static final String reRealname=  BASEURL+"/User/changeRealname";
     //重置用户性别
     public static final String reSex=  BASEURL+"/User/changeSex";
-
+    //添加群组
+    public static final String addGroup = BASEURL+"/Group/addGroup";
 
 }
 

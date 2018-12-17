@@ -1,11 +1,13 @@
 package com.example.locationword.locationword;
 
+import android.Manifest;
 import android.app.Notification;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -46,7 +48,9 @@ import com.example.locationword.locationword.tool.JSONChange;
 import com.example.locationword.locationword.tool.ShowUtil;
 import com.example.locationword.locationword.tool.SkipUtils;
 import com.google.gson.JsonObject;
+import com.hyphenate.EMConnectionListener;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.easeui.ui.SystemMessageActivity;
 import com.hyphenate.easeui.utils.CallReceiver;
 import com.mob.tools.gui.ViewPagerAdapter;
 
@@ -78,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private BDLocation bdl;
     private SharedPreferences s;
     private ImageView ivSearch;
+    private String[] premission;
+    private Boolean connectB = true;
+    private EMConnectionListener connectionListener;
     private Handler handler=new Handler(){
         public void handleMessage(Message msg){
             switch (msg.what){
@@ -107,12 +114,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppManager.getAppManager().addActivity(this);
         initView();
         addListener();
+        if (Build.VERSION.SDK_INT >= 23) {
+            AppManager.requestRuntimePermissions(premission,MainActivity.this);
+        }
         addCallReceive();
         addJpushReceive();
         bdl=new BDLocation(getApplicationContext());//直接一次定位
         setJPush();
     }
     public void initView(){
+        premission= new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO,Manifest.permission.CAMERA
+        ,Manifest.permission.READ_CONTACTS,Manifest.permission.RECEIVE_SMS,Manifest.permission.MANAGE_DOCUMENTS };
         s = getSharedPreferences(Constant.logindata,MODE_PRIVATE);
         userId = getSharedPreferences(Constant.logindata,MODE_PRIVATE
         ).getString(Constant.UserId,"");
@@ -130,22 +144,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tv_title=findViewById(R.id.tv_title);
       }
     public void addListener(){
+        connectionListener = new EMConnectionListener() {
+            @Override
+            public void onConnected() {
+                Log.i("tttt","dsdsd111");
+            }
+
+            @Override
+            public void onDisconnected(int errorCode) {
+                connectB=false;
+
+                showDisConnectDialog();
+                Log.i("tttt","dsdsd");
+            }
+        };
         tv_add.setOnClickListener(this);
         bottomNavigationView.setOnNavigationItemSelectedListener(new MyBottomBarListenr());
         viewPager.addOnPageChangeListener(this);
         ivSearch.setOnClickListener(this);
+
+        EMClient.getInstance().addConnectionListener(connectionListener);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.tv_add:
-                SkipUtils.skipActivity(MainActivity.this,AddGroupActivity.class);
-                break;
-            case R.id.iv_search:
-                SkipUtils.skipActivity(MainActivity.this,SearchGroupActivity.class);
-                break;
+        if (connectB){
+            switch (v.getId()){
+                case R.id.tv_add:
+                    SkipUtils.skipActivity(MainActivity.this,AddGroupActivity.class);
+                    break;
+                case R.id.iv_search:
+                    SkipUtils.skipActivity(MainActivity.this,SearchGroupActivity.class);
+                    break;
+            }
+        }else {
+            showDisConnectDialog();
         }
+
     }
 
     @Override
@@ -155,6 +190,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onPageSelected(int i) {
+    if (connectB){
+
         if (menuItem != null) {
             menuItem.setChecked(false);
         } else {
@@ -173,6 +210,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tv_title.setText("我的");
                 break;
         }
+    }else {
+        showDisConnectDialog();
+    }
     }
 
     @Override
@@ -184,21 +224,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            menuItem = item;
-            switch (item.getItemId()) {
-                case R.id.navigation_msg:
-                    tv_title.setText("消息");
-                    viewPager.setCurrentItem(0);
-                    return true;
-                case R.id.navigation_group:
-                    tv_title.setText("群组");
-                    viewPager.setCurrentItem(1);
-                    return true;
-                case R.id.navigation_me:
-                    tv_title.setText("我的");
-                    viewPager.setCurrentItem(2);
-                    return true;
+            if (connectB){
+                menuItem = item;
+                switch (item.getItemId()) {
+                    case R.id.navigation_msg:
+                        tv_title.setText("消息");
+                        viewPager.setCurrentItem(0);
+                        return true;
+                    case R.id.navigation_group:
+                        tv_title.setText("群组");
+                        viewPager.setCurrentItem(1);
+                        return true;
+                    case R.id.navigation_me:
+                        tv_title.setText("我的");
+                        viewPager.setCurrentItem(2);
+                        return true;
+                }
+            }else {
+                showDisConnectDialog();
             }
+
             return false;
         }
     }
@@ -234,6 +279,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LoginOutLocation();
        // EMClient.getInstance().logout(true);
         bdl.stop();
+        AppManager.getAppManager().removeActivity(this);
+        EMClient.getInstance().removeConnectionListener(connectionListener);
         EventBus.getDefault().unregister(this);//订阅
         Log.i("application","logout");
     }
@@ -250,21 +297,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            new AlertDialog.Builder(context)
-                    .setTitle("确定退出程序")
-                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    })
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            MainActivity.this.finish();
-                        }
-                    })
-                    .create().show();
+                new AlertDialog.Builder(context)
+                        .setTitle("确定退出程序")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                MainActivity.this.finish();
+                            }
+                        })
+                        .create().show();
+
+
             return false;
         }else {
             return super.onKeyDown(keyCode, event);
@@ -302,7 +352,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
+    protected void showDisConnectDialog(){
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
 
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("你的账号在别处登录！")
+                        .setPositiveButton("重新登录", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                SharedPreferences s=getSharedPreferences(Constant.logindata,MODE_PRIVATE);
+                                s.edit().putString(Constant.UserId,userId).commit();
+                                AppManager.getAppManager().finishActivity(MainActivity.class);
+                                SkipUtils.skipActivity(MainActivity.this,LoginActivity.class);
+                            }
+                        }).setNegativeButton("退出登录", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences s=getSharedPreferences(Constant.logindata,MODE_PRIVATE);
+                        s.edit().putString(Constant.UserId,"").commit();
+                        AppManager.getAppManager().finishActivity(MainActivity.class);
+                        SkipUtils.skipActivity(MainActivity.this,LoginActivity.class);
+                    }
+                }).create().show();
+            }
+        });
+    }
     protected void setJPush(){
         JPushInterface.setAliasAndTags(getApplicationContext(),
                 userId,

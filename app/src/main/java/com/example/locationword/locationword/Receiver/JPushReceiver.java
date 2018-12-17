@@ -82,7 +82,7 @@ public class JPushReceiver extends BroadcastReceiver {
 
     private void openNotification(Context context, Bundle bundle){
         Log.i(TAG,"API"+Build.VERSION.SDK_INT);
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT > 23) {
             Intent i = new Intent(context,SystemMessageActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(i);

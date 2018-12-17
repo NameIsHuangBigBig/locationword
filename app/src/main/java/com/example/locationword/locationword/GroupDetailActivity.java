@@ -240,7 +240,10 @@ public class GroupDetailActivity extends AppCompatActivity implements View.OnCli
                                 }
                                 tvName .setText(group.getGroupName());
                                 tvNum.setText(group.getGroupId());
-                                tvDistribute.setText(group.getDescription());
+                                if(group.getDescription().equals("")){
+                                    tvDistribute.setText("这个群主很懒！");
+                                }
+
                             }
                         });
                     }

@@ -11,9 +11,11 @@ import android.util.Log;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.walknavi.WalkNavigateHelper;
 import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
+import com.example.locationword.locationword.MainActivity;
 import com.example.locationword.locationword.http.API;
 import com.example.locationword.locationword.http.HttpUtil;
 import com.example.locationword.locationword.tool.Constant;
+import com.hyphenate.EMConnectionListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.EaseUI;
@@ -42,7 +44,23 @@ public class application extends Application {
         UMengInit();
         BaiduInit();
         JPushInit();
+       // LoginListener();
         MobSDK.init(this);
+    }
+    protected void LoginListener(){
+        EMClient.getInstance().addConnectionListener(new EMConnectionListener() {
+            @Override
+            public void onConnected() {
+                Log.i("tttt","dsdsd");
+            }
+
+            @Override
+            public void onDisconnected(int errorCode) {
+                Log.i("tttt","dsdsd");
+            }
+        });
+
+//
     }
     protected void JPushInit(){
         JPushInterface.setDebugMode(true);

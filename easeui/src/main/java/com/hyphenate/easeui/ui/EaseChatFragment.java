@@ -9,9 +9,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileUriExposedException;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
@@ -911,6 +913,7 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
     /**
      * capture new image
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     protected void selectPicFromCamera() {
         if (!EaseCommonUtils.isSdcardExist()) {
             Toast.makeText(getActivity(), R.string.sd_card_does_not_exist, Toast.LENGTH_SHORT).show();
@@ -921,9 +924,14 @@ public class EaseChatFragment extends EaseBaseFragment implements EMMessageListe
                 + System.currentTimeMillis() + ".jpg");
         //noinspection ResultOfMethodCallIgnored
         cameraFile.getParentFile().mkdirs();
-        startActivityForResult(
-                new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile)),
-                REQUEST_CODE_CAMERA);
+        try{
+            startActivityForResult(
+                    new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile)),
+                    REQUEST_CODE_CAMERA);
+        }catch (FileUriExposedException e){
+            Toast.makeText(getContext(),"相机异常！",Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /**
