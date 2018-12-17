@@ -23,7 +23,7 @@ import cn.jpush.android.api.JPushInterface;
 
 public class SetActivity extends AppCompatActivity implements View.OnClickListener,CompoundButton.OnCheckedChangeListener {
     private ImageView back;
-    private Switch sTuis;
+  //  private Switch sTuis;
     private Switch sLogin;
     private RelativeLayout rlChangePhone;
     private Button btnTuic;
@@ -40,13 +40,13 @@ public class SetActivity extends AppCompatActivity implements View.OnClickListen
         rlChangePhone.setOnClickListener(this);
         btnTuic.setOnClickListener(this);
 //        sLocation.setOnCheckedChangeListener(this);
-        sTuis.setOnCheckedChangeListener(this);
+   //     sTuis.setOnCheckedChangeListener(this);
         sLogin.setOnCheckedChangeListener(this);
     }
     public void initView(){
         back = (ImageView) findViewById(R.id.back);
 
-        sTuis = (Switch) findViewById(R.id.s_tuis);
+   //     sTuis = (Switch) findViewById(R.id.s_tuis);
         sLogin = (Switch) findViewById(R.id.s_login);
         rlChangePhone = (RelativeLayout) findViewById(R.id.rl_changePhone);
         btnTuic = (Button) findViewById(R.id.btn_tuic);
@@ -57,11 +57,11 @@ public class SetActivity extends AppCompatActivity implements View.OnClickListen
             sLogin.setChecked(false);
         }
 
-        if (s.getBoolean(Constant.autoTuis,true)){
-            sTuis.setChecked(true);
-        }else{
-            sTuis.setChecked(false);
-        }
+    //    if (s.getBoolean(Constant.autoTuis,true)){
+     //       sTuis.setChecked(true);
+   //     }else{
+     //       sTuis.setChecked(false);
+     //   }
     }
 
     @Override
@@ -94,13 +94,13 @@ public class SetActivity extends AppCompatActivity implements View.OnClickListen
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         ShowUtil.showText(SetActivity.this,"设置成功！");
         switch (compoundButton.getId()){
-            case R.id.s_tuis:
-                if (b){
-                    s.edit().putBoolean(Constant.autoTuis,true).commit();
-                }else{
-                    s.edit().putBoolean(Constant.autoTuis,false).commit();
-                }
-                break;
+//            case R.id.s_tuis:
+//                if (b){
+//                    s.edit().putBoolean(Constant.autoTuis,true).commit();
+//                }else{
+//                    s.edit().putBoolean(Constant.autoTuis,false).commit();
+//                }
+//                break;
             case R.id.s_login:
                 if (b){
                     s.edit().putBoolean(Constant.autoLogin,true).commit();
