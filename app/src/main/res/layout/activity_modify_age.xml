@@ -9,24 +9,26 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:background="#43536d">
+        <ImageView
+            android:id="@+id/age_back_mine"
+            android:background="@drawable/back_white"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="修改年龄"
+            android:text="  修改年龄"
             android:textColor="#FFFFFF"
             android:textSize="20dp"
-            android:gravity="center"/>
+            android:gravity="center_vertical"/>
     </LinearLayout>
     <EditText
         android:id="@+id/ed_modify_age"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_margin="10dp"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:hint="请输入新的年龄"
         android:layout_margin="10dp"
-        android:text="请输入新的年龄"
         android:textSize="20dp"/>
     <Button
         android:id="@+id/btn_modify_age"

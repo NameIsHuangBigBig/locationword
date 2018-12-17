@@ -90,6 +90,7 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                             ivYc.setClickable(true);
                             iv_map.setClickable(true);
                             btnTuic.setClickable(true);
+                            tvTs.setClickable(true);
                             ivInvite.setVisibility(View.VISIBLE);
                             addImageView(ja);
                         }
@@ -112,12 +113,35 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.group_manager_activity);
         initView();
         addListener();
+        requestGroupInform();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 getGroupMan();
             }
         }).start();
+    }
+    protected void requestGroupInform(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final String s= EMClient.getInstance().groupManager().fetchGroupAnnouncement(GroupId);
+                    Log.i("tag",s+"ddd");
+                    if (!s.equals("")){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvTs.setText(s);
+                            }
+                        });
+                    }
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
     protected void addListener(){
         iv_map.setOnClickListener(this);
@@ -178,6 +202,8 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
         ivJj = (ImageView) findViewById(R.id.iv_jj);
         ivFx = (ImageView) findViewById(R.id.iv_fx);
         ivYc = (ImageView) findViewById(R.id.iv_yc);
+        tvTs=(TextView) findViewById(R.id.tv_ts);
+
         ivYc.setClickable(false);
         iv_map.setClickable(false);
         btnTuic = (Button) findViewById(R.id.btn_tuic);
@@ -190,7 +216,9 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
             GroupName=group.getGroupName();
             tvGroupname.setText(group.getGroupName());
         }
-        tvTs = (TextView) findViewById(R.id.tv_ts);
+        //tvTs = (TextView) findViewById(R.id.tv_ts);
+        tvTs.setClickable(false);
+        tvTs.setOnClickListener(this);
     }
 
     @Override
@@ -232,6 +260,17 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                 }
                 break;
             case R.id.rela_title_groupManager_two_two:
+                HashMap<String ,Object> map = new HashMap<>();
+                map.put("GroupId",GroupId);
+                map.put("InGroupMan",userIdArray.toString());
+                SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,SendGroupInformActivity.class,map);
+                break;
+            case R.id.tv_ts:
+                HashMap<String ,Object> map1 = new HashMap<>();
+                map1.put("GroupId",GroupId);
+                map1.put("InGroupMan",userIdArray.toString());
+                SkipUtils.skipActivityWithParameter(GroupManagerActivity.this,SendGroupInformActivity.class,map1);
+
                 break;
             case R.id.iv_zr:
                 Log.i(TAG,OwnerId+"\t213213"+UserId);
@@ -407,6 +446,8 @@ public class GroupManagerActivity extends AppCompatActivity implements View.OnCl
                     getGroupMan();
                 }
             }).start();
+        }else if(event.getResult().equals("inform")){
+            requestGroupInform();
         }
 
     }

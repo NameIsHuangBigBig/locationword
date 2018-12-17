@@ -38,6 +38,19 @@ public class API {
     //多用推送
     public static final String userJPush = BASEURL+"/JPush/userJPush";
 
+
+    //重置手机号码
+    public static final String reChangePhone = BASEURL+"/User/changePhone";
+    //重置我的头像
+    public static final String reAvarl = BASEURL+"/User/changeAvarl";
+    //重置用户昵称
+    public static final String reNickname =  BASEURL+"/User/changeNickname";
+    //重置用户真实姓名
+    public static final String reRealname=  BASEURL+"/User/changeRealname";
+    //重置用户性别
+    public static final String reSex=  BASEURL+"/User/changeSex";
+
+
 }
 
 

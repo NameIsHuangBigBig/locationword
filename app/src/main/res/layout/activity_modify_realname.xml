@@ -10,24 +10,26 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:background="#43536d">
+        <ImageView
+            android:id="@+id/realname_back_mine"
+            android:background="@drawable/back_white"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="修改真实姓名"
+            android:text="  修改真实姓名"
             android:textColor="#FFFFFF"
             android:textSize="20dp"
-            android:gravity="center"/>
+            android:gravity="center_vertical"/>
     </LinearLayout>
     <EditText
         android:id="@+id/ed_modify_realname"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_margin="10dp"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
         android:layout_margin="10dp"
-        android:text="请输入新的真实姓名"
+        android:hint="请输入新的真实姓名"
         android:textSize="20dp"/>
     <Button
         android:id="@+id/btn_modify_realname"

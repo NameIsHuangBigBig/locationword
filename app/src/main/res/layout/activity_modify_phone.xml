@@ -65,8 +65,8 @@
             android:layout_marginLeft="5dp"
             android:background="#cccccc"/>
         <EditText
-            android:inputType="number"
             android:id="@+id/ed_modify_code"
+            android:inputType="number"
             android:layout_width="300dp"
             android:layout_height="50dp"
             android:maxLength="6"
